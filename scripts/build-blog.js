@@ -240,6 +240,113 @@ function renderHead({ title, description }) {
   </header>`;
 }
 
+function renderAsides() {
+  return `
+  <!-- offset-content start  -->
+  <aside class="offset-content-wrapper offset-content-wrapper-army p-relative">
+    <button class="offset-content-close">
+      <i class="fal fa-times"></i>
+    </button>
+    <div class="offset-content offset-menu-content offset-content-army">
+      <div class="offset-info">
+        <div class="offset-logo mb-65">
+          <a href="/index.html"><span class="offset-brand">Streljački klub Arilje</span></a>
+        </div>
+        <div class="offset-info-widget">
+          <h4 class="offset-info-heading">O nama</h4>
+          <p>Streljački klub Arilje okuplja rekreativce i takmičare svih uzrasta. Naš fokus su bezbednost,
+            preciznost i fer-plej, uz stručnu podršku trenera.</p>
+        </div>
+        <div class="offset-info-widget">
+          <h4 class="offset-info-heading">Pozovite nas</h4>
+          <div class="footer-widget-contact">
+            <ul>
+              <li>
+                <div class="arm-single-contact">
+                  <div class="footer-contact-icon">
+                    <i class="flaticon-077-map"></i>
+                  </div>
+                  <p>Miće Matovića bb, Arilje</p>
+                </div>
+              </li>
+              <li>
+                <div class="arm-single-contact">
+                  <div class="footer-contact-icon">
+                    <i class="flaticon-073-email-2"></i>
+                  </div>
+                  <p><a href="mailto:info@sk-arilje.rs">info@sk-arilje.rs</a></p>
+                </div>
+              </li>
+              <li>
+                <div class="arm-single-contact">
+                  <div class="footer-contact-icon">
+                    <i class="flaticon-060-call"></i>
+                  </div>
+                  <p><a href="tel:+381677425456">+381 677 425 456</a></p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="social-links offset-menu-social">
+          <ul>
+            <li><a href="https://www.facebook.com/skmilosavvujovicarilje" target="_blank"><i class="fab fa-facebook"></i></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="offset-thumb">
+        <img src="/assets/img/bg/offset-bg.jpg" alt="img not found">
+      </div>
+    </div>
+  </aside>
+  <!-- side toggle start -->
+  <aside class="fix">
+    <div class="side-info ">
+      <div class="side-info-content">
+        <div class="offset-widget offset-header mb-40">
+          <div class="row align-items-center">
+            <div class="col-9">
+              <div class="offset-logo">
+                <a href="/index.html">
+                  <img src="/assets/img/logo/logo-white.png" alt="Logo">
+                </a>
+              </div>
+            </div>
+            <div class="col-3 text-end">
+              <button class="side-info-close">
+                <i class="fal fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="mobile-menu d-xl-none fix"></div>
+        <div class="offset-widget offset-support mb-30">
+          <div class="meta-item header-meta-item">
+            <a href="tel:+381677425456">
+              <div class="meta-item-icon">
+                <i class="fas fa-phone-alt"></i>
+              </div>
+            </a>
+            <div class="meta-item-content">
+              <div class="meta-title"><span>Pozovite</span> nas</div>
+              <p><a href="tel:+381677425456">+381 677 425 456</a></p>
+              <p><a href="mailto:info@sk-arilje.rs">info@sk-arilje.rs</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="offset-widget offset-social mb-0">
+          <div class="social-links">
+            <ul>
+              <li><a href="https://www.facebook.com/skmilosavvujovicarilje" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="offcanvas-overlay"></div>`;
+}
+
 function renderFooter() {
   return `
   <!-- preloader -->
@@ -337,6 +444,7 @@ function renderIndex(posts) {
 
   return `
 ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije vesti i objave' })}
+${renderAsides()}
 <main>
   <section class="page-title-area page-title--compact" data-background="/assets/img/bg/page-title-bg.jpg">
     <div class="container">
@@ -563,6 +671,7 @@ function renderPost(post) {
   const headerBg = post.heroFull || post.heroImage || '/assets/img/bg/page-title-bg.jpg';
   return `
 ${renderHead({ title: `${post.title} | Streljački klub Arilje`, description: post.description || '' })}
+${renderAsides()}
 <main>
   <section class="page-title-area page-title--compact" data-background="${headerBg}">
     <div class="container">
