@@ -755,10 +755,11 @@ ${renderAsides()}
                 </ul>
               </div>
             </div>
+            ${ (prev || next) ? `
             <div class="d-flex justify-content-between align-items-center mt-20 mb-10">
-              ${prev ? `<a class="arm-btn" href="/blog/${prev.slug}/"><span class="circle-btn"><i class="fal fa-long-arrow-left"></i></span>Prethodna</a>` : '<span></span>'}
-              ${next ? `<a class="arm-btn" href="/blog/${next.slug}/">Sledeća<span class="circle-btn"><i class="fal fa-long-arrow-right"></i></span></a>` : '<span></span>'}
-            </div>
+              ${prev ? `<a class="arm-btn" href="/blog/${prev.slug}/" aria-label="Starija objava"><span class="circle-btn"><i class="fal fa-long-arrow-left"></i></span>Prethodna</a>` : '<span></span>'}
+              ${next ? `<a class="arm-btn" href="/blog/${next.slug}/" aria-label="Novija objava">Sledeća<span class="circle-btn"><i class="fal fa-long-arrow-right"></i></span></a>` : '<span></span>'}
+            </div>` : '' }
             ${related && related.length ? `
             <div class="mt-30">
               <h4 class="mb-15">Možda će vam se svideti</h4>
@@ -940,15 +941,32 @@ async function main() {
   const indexHtml = renderIndex(posts);
   fs.writeFileSync(path.join(BLOG_DIR, 'index.html'), indexHtml, 'utf8');
 
+  // Ensure strict newest->oldest ordering by parsed date
+  const sorted = posts.slice().sort((a, b) => {
+    const da = a.date ? new Date(a.date).getTime() : 0;
+    const db = b.date ? new Date(b.date).getTime() : 0;
+    return db - da; // newer first
+  });
+
   // Write posts
-  for (let i = 0; i < posts.length; i++) {
-    const p = posts[i];
-    const prev = posts[i + 1] || null;
-    const next = posts[i - 1] || null;
-    const related = posts.filter(x => x.slug !== p.slug).slice(0, 3);
+  for (let i = 0; i < sorted.length; i++) {
+    const p = sorted[i];
+    // In our UX: "Sledeća" = newer (to the left), "Prethodna" = older (to the right)
+    const next = sorted[i - 1] || null; // newer
+    const prev = sorted[i + 1] || null; // older
+    // Related: pick by simple score on shared tags/categories, then fallback by recency
+    const others = sorted.filter(x => x.slug !== p.slug);
+    const scored = others.map(x => {
+      let score = 0;
+      const pCats = new Set((p.categories||[]).map(String));
+      const pTags = new Set((p.tags||[]).map(String));
+      (x.categories||[]).forEach(c => { if (pCats.has(String(c))) score += 2; });
+      (x.tags||[]).forEach(t => { if (pTags.has(String(t))) score += 1; });
+      return { x, score, date: x.date ? new Date(x.date).getTime() : 0 };
+    }).sort((a,b) => (b.score - a.score) || (b.date - a.date)).map(s => s.x).slice(0,3);
     const postDir = path.join(BLOG_DIR, p.slug);
     ensureDir(postDir);
-    const html = renderPost(p, prev, next, related);
+    const html = renderPost(p, prev, next, scored);
     fs.writeFileSync(path.join(postDir, 'index.html'), html, 'utf8');
   }
 
