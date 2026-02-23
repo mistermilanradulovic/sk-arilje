@@ -66,6 +66,21 @@ function renderHead({ title, description }) {
       background-size: cover !important;
       background-repeat: no-repeat !important;
     }
+    /* Comments: keep list reasonably sized with scrolling */
+    #comment-list {
+      max-height: 480px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    @media (max-width: 767.98px) {
+      #comment-list { max-height: 360px; }
+    }
+    #comment-list::-webkit-scrollbar { width: 8px; }
+    #comment-list::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,.2);
+      border-radius: 4px;
+    }
+    #comment-list::-webkit-scrollbar-track { background: transparent; }
     /* Filter UI — highlight active selections, blend with theme */
     .sidebar-category a {
       display: inline-flex;
