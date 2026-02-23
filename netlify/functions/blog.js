@@ -26,7 +26,8 @@ exports.handler = async (event) => {
     const categories = (event.queryStringParameters && event.queryStringParameters.categories) ? String(event.queryStringParameters.categories) : '';
     const tags = (event.queryStringParameters && event.queryStringParameters.tags) ? String(event.queryStringParameters.tags) : '';
     params.set('content_type', 'blogPost');
-    params.set('order', '-fields.date');
+    // Order newest first by explicit date, then by creation time as a secondary key
+    params.set('order', '-fields.date,-sys.createdAt');
     params.set('limit', String(pageSize));
     params.set('skip', String((page - 1) * pageSize));
     params.set('include', '2');
