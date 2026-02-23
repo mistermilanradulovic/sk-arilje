@@ -301,7 +301,7 @@ function renderAsides() {
   </aside>
   <!-- side toggle start -->
   <aside class="fix">
-    <div class="side-info ">
+    <div class="side-info side-info-army">
       <div class="side-info-content">
         <div class="offset-widget offset-header mb-40">
           <div class="row align-items-center">
