@@ -198,25 +198,43 @@
 				}
 			})();
 
-			var current = window.location.pathname.split('/').pop() || 'index.html';
-			if (current.indexOf('#') > -1) current = current.split('#')[0];
-			if (current === '') current = 'index.html';
+			// Normalize current path to support pretty URLs like /blog/
+			var pathname = window.location.pathname || '/';
+			var current;
+			if (pathname === '/' || pathname === '') {
+				current = 'index.html';
+			} else if (pathname === '/blog/' || pathname.indexOf('/blog/') === 0) {
+				current = '/blog/'; // special key for blog section
+			} else {
+				current = pathname.split('/').pop() || 'index.html';
+			}
+			if (String(current).indexOf('#') > -1) current = String(current).split('#')[0];
 
 			function mark(container) {
 				if (!container) return;
-				var links = container.querySelectorAll('a[href]');
-				links.forEach(function (a) {
-					var href = a.getAttribute('href') || '';
-					// normalize
-					var file = href.split('/').pop();
-					if (href === '#' || href === 'javascript:void(0)') return;
-					if (file === '') file = 'index.html';
-					if (file === current) {
+				// reset existing
+				container.querySelectorAll('a.active').forEach(function(a){ a.classList.remove('active'); });
+				container.querySelectorAll('li.active').forEach(function(li){ li.classList.remove('active'); });
+				if (current === '/blog/') {
+					container.querySelectorAll('a[href="/blog/"]').forEach(function(a){
 						a.classList.add('active');
 						var li = a.closest('li');
 						if (li) li.classList.add('active');
-					}
-				});
+					});
+				} else {
+					var links = container.querySelectorAll('a[href]');
+					links.forEach(function (a) {
+						var href = a.getAttribute('href') || '';
+						if (href === '#' || href === 'javascript:void(0)') return;
+						var file = href.split('/').pop();
+						if (file === '') file = 'index.html';
+						if (file === current) {
+							a.classList.add('active');
+							var li = a.closest('li');
+							if (li) li.classList.add('active');
+						}
+					});
+				}
 			}
 
 			// main desktop nav
