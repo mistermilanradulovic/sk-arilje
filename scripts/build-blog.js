@@ -134,6 +134,43 @@ function renderHead({ title, description }) {
     @media (min-width: 1200px) {
       .tp-post-thumb img { height: 260px; }
     }
+    /* Pagination tap targets */
+    .basic-pagination ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .basic-pagination .page-numbers,
+    .basic-pagination .prev,
+    .basic-pagination .next {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 38px;
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 2px;
+      color: inherit;
+      background: #fff;
+      transition: all .2s ease;
+    }
+    .basic-pagination .page-numbers:hover,
+    .basic-pagination .prev:hover,
+    .basic-pagination .next:hover {
+      border-color: var(--clr-theme-2);
+      color: var(--clr-theme-2);
+    }
+    .basic-pagination .current {
+      background: var(--clr-theme-2);
+      color: #fff;
+      border-color: var(--clr-theme-2);
+    }
+    .basic-pagination .disabled {
+      opacity: .5;
+      pointer-events: none;
+    }
     /* Post inline/hero image: scale responsively */
     .blog-details-thumb img,
     .blog-details-content img {
@@ -314,8 +351,11 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
     <div class="container">
       <div class="row wow fadeInUp" data-wow-delay=".2s">
         <div class="col-lg-8">
-          <div class="row">
+          <div id="blog-grid" class="row">
             ${items || '<p>Trenutno nema objava.</p>'}
+          </div>
+          <div class="basic-pagination mt-40">
+            <ul id="blog-pagination" aria-label="Paginacija objava"></ul>
           </div>
         </div>
         <div class="col-lg-4">
@@ -377,10 +417,15 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
 <script>
 (function(){
   var qEl = document.getElementById('blog-search');
-  var cards = Array.prototype.slice.call(document.querySelectorAll('.blog-card'));
+  var grid = document.getElementById('blog-grid');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('#blog-grid .blog-card'));
   var catList = document.getElementById('blog-categories');
   var tagList = document.getElementById('blog-tags');
   var state = { q: '', categories: [], tags: [] };
+  var page = 1;
+  var pageSize = 6; // balanced for mobile/desktop
+  var pager = document.getElementById('blog-pagination');
+
   function matches(card) {
     var t = (card.getAttribute('data-title')||'');
     var d = (card.getAttribute('data-desc')||'');
@@ -402,13 +447,65 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
     }
     return true;
   }
-  function apply() {
-    var anyVisible = false;
-    cards.forEach(function(card){
-      var ok = matches(card);
-      card.style.display = ok ? '' : 'none';
-      if (ok) anyVisible = true;
+  function currentMatches() {
+    return cards.filter(matches);
+  }
+  function renderPagination(total, current) {
+    if (!pager) return;
+    pager.innerHTML = '';
+    var totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (totalPages <= 1) { return; }
+    function li(html, cls, attrs) {
+      var el = document.createElement('li');
+      if (cls) el.className = cls;
+      el.innerHTML = html;
+      if (attrs) Object.keys(attrs).forEach(function(k){ el.firstElementChild && el.firstElementChild.setAttribute(k, attrs[k]); });
+      pager.appendChild(el);
+    }
+    // Prev
+    li('<a href="#" class="prev" aria-label="Prethodna stranica"><i class="fal fa-arrow-left"></i></a>', (current<=1?'disabled':''), { 'data-page': String(current-1) });
+    // Page numbers (simple 1..N; can add ellipsis later if needed)
+    for (var i=1;i<=totalPages;i++){
+      if (i === current) {
+        li('<span class="page-numbers current" aria-current="page">'+i+'</span>');
+      } else {
+        li('<a href="#" class="page-numbers">'+i+'</a>', '', { 'data-page': String(i), 'aria-label': 'Idi na stranicu '+i });
+      }
+    }
+    // Next
+    li('<a href="#" class="next" aria-label="Sledeća stranica"><i class="fal fa-arrow-right"></i></a>', (current>=totalPages?'disabled':''), { 'data-page': String(current+1) });
+  }
+  function paginateAndRender() {
+    var list = currentMatches();
+    var total = list.length;
+    var totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (page > totalPages) page = totalPages;
+    // Hide all first
+    cards.forEach(function(c){ c.style.display = 'none'; });
+    // Show only current page of matches
+    var start = (page - 1) * pageSize;
+    var end = start + pageSize;
+    list.slice(start, end).forEach(function(c){ c.style.display = ''; });
+    renderPagination(total, page);
+  }
+  function attachPager() {
+    if (!pager) return;
+    pager.addEventListener('click', function(e){
+      var a = e.target.closest('a[data-page]');
+      if (!a) return;
+      e.preventDefault();
+      var p = parseInt(a.getAttribute('data-page'), 10);
+      if (!isNaN(p) && p >= 1) {
+        page = p;
+        paginateAndRender();
+        if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
+  }
+  function apply() {
+    // Reset to first page when filters/search change
+    page = 1;
+    paginateAndRender();
   }
   if (qEl) {
     qEl.addEventListener('input', function(){
@@ -447,6 +544,7 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
     });
   }
   // initial paint
+  attachPager();
   apply();
 })();
 </script>
