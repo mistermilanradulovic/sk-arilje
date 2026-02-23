@@ -418,42 +418,15 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
 (function(){
   var qEl = document.getElementById('blog-search');
   var grid = document.getElementById('blog-grid');
-  var cards = Array.prototype.slice.call(document.querySelectorAll('#blog-grid .blog-card'));
   var catList = document.getElementById('blog-categories');
   var tagList = document.getElementById('blog-tags');
-  var state = { q: '', categories: [], tags: [] };
-  var page = 1;
-  var pageSize = 6; // balanced for mobile/desktop
+  var state = { q: '', categories: [], tags: [], page: 1, pageSize: 6, total: 0 };
   var pager = document.getElementById('blog-pagination');
 
-  function matches(card) {
-    var t = (card.getAttribute('data-title')||'');
-    var d = (card.getAttribute('data-desc')||'');
-    var cats = (card.getAttribute('data-categories')||'');
-    var tags = (card.getAttribute('data-tags')||'');
-    if (state.q) {
-      var m = t.indexOf(state.q) !== -1 || d.indexOf(state.q) !== -1;
-      if (!m) return false;
-    }
-    if (state.categories && state.categories.length) {
-      var postCats = cats ? cats.split(',') : [];
-      var any = state.categories.some(function(c){ return postCats.indexOf(c) !== -1; });
-      if (!any) return false;
-    }
-    if (state.tags && state.tags.length) {
-      var postTags = tags ? tags.split(',') : [];
-      var anyT = state.tags.some(function(tg){ return postTags.indexOf(tg) !== -1; });
-      if (!anyT) return false;
-    }
-    return true;
-  }
-  function currentMatches() {
-    return cards.filter(matches);
-  }
   function renderPagination(total, current) {
     if (!pager) return;
     pager.innerHTML = '';
-    var totalPages = Math.max(1, Math.ceil(total / pageSize));
+    var totalPages = Math.max(1, Math.ceil(total / state.pageSize));
     if (totalPages <= 1) { return; }
     function li(html, cls, attrs) {
       var el = document.createElement('li');
@@ -475,19 +448,6 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
     // Next
     li('<a href="#" class="next" aria-label="Sledeća stranica"><i class="fal fa-arrow-right"></i></a>', (current>=totalPages?'disabled':''), { 'data-page': String(current+1) });
   }
-  function paginateAndRender() {
-    var list = currentMatches();
-    var total = list.length;
-    var totalPages = Math.max(1, Math.ceil(total / pageSize));
-    if (page > totalPages) page = totalPages;
-    // Hide all first
-    cards.forEach(function(c){ c.style.display = 'none'; });
-    // Show only current page of matches
-    var start = (page - 1) * pageSize;
-    var end = start + pageSize;
-    list.slice(start, end).forEach(function(c){ c.style.display = ''; });
-    renderPagination(total, page);
-  }
   function attachPager() {
     if (!pager) return;
     pager.addEventListener('click', function(e){
@@ -496,21 +456,61 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
       e.preventDefault();
       var p = parseInt(a.getAttribute('data-page'), 10);
       if (!isNaN(p) && p >= 1) {
-        page = p;
-        paginateAndRender();
+        state.page = p;
+        load();
         if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
   }
-  function apply() {
-    // Reset to first page when filters/search change
-    page = 1;
-    paginateAndRender();
+  function cardHtml(item){
+    var dateStr = item.date ? new Date(item.date) : null;
+    var dateTxt = dateStr ? (('0'+dateStr.getDate()).slice(-2)+'.'+('0'+(dateStr.getMonth()+1)).slice(-2)+'.'+dateStr.getFullYear()) : '';
+    var img = item.heroThumb || item.heroImage || '/assets/img/blog/blog-default.jpg';
+    var safeTitle = item.title || '';
+    var safeDesc = (item.description || '');
+    return '<div class="col-xl-6 col-lg-6 col-md-12 mb-30">'+
+      '<article class="tp-post tp-post-grid">'+
+        '<div class="tp-post-thumb p-relative fix">'+
+          '<a href="/blog/'+item.slug+'/"><img src="'+img+'" alt="'+escapeHtml(safeTitle)+'" loading="lazy" decoding="async"></a>'+
+        '</div>'+
+        '<div class="tp-post-content">'+
+          '<div class="tp-post-meta"><span><i class="fal fa-calendar-alt"></i> '+(dateTxt||'')+'</span></div>'+
+          '<h3 class="tp-post-title"><a href="/blog/'+item.slug+'/">'+escapeHtml(safeTitle)+'</a></h3>'+
+          '<p>'+escapeHtml(safeDesc)+'</p>'+
+          '<div class="tp-post-btn"><a class="arm-btn" href="/blog/'+item.slug+'/"><span class="circle-btn"><i class="fal fa-long-arrow-right"></i></span>Pročitajte više</a></div>'+
+        '</div>'+
+      '</article>'+
+    '</div>';
   }
+  function renderGrid(items){
+    if (!grid) return;
+    grid.innerHTML = items.map(cardHtml).join('') || '<p>Trenutno nema objava.</p>';
+  }
+  function buildUrl(){
+    var base = '/.netlify/functions/blog';
+    var u = new URL(base, window.location.origin);
+    u.searchParams.set('page', String(state.page));
+    u.searchParams.set('pageSize', String(state.pageSize));
+    if (state.q) u.searchParams.set('q', state.q);
+    if (state.categories && state.categories.length) u.searchParams.set('categories', state.categories.join(','));
+    if (state.tags && state.tags.length) u.searchParams.set('tags', state.tags.join(','));
+    return u.toString();
+  }
+  function load(){
+    var url = buildUrl();
+    fetch(url).then(function(r){ return r.json(); }).then(function(data){
+      state.total = data.total || 0;
+      renderGrid(data.items || []);
+      renderPagination(state.total, state.page);
+    }).catch(function(){ /* noop */ });
+  }
+  function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+
   if (qEl) {
     qEl.addEventListener('input', function(){
-      state.q = (qEl.value||'').toLowerCase().trim();
-      apply();
+      state.q = (qEl.value||'').trim();
+      state.page = 1;
+      load();
     });
   }
   if (catList) {
@@ -518,14 +518,15 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
       var a = e.target.closest('a[data-category]');
       if (!a) return;
       e.preventDefault();
-      var sel = (a.getAttribute('data-category')||'').toLowerCase();
-      var idx = state.categories.indexOf(sel);
+      var sel = (a.getAttribute('data-category')||'');
+      var idx = state.categories.map(function(v){return v.toLowerCase();}).indexOf(sel.toLowerCase());
       if (idx === -1) state.categories.push(sel); else state.categories.splice(idx, 1);
       Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){
-        var v = (el.getAttribute('data-category')||'').toLowerCase();
-        el.classList.toggle('active', state.categories.indexOf(v) !== -1);
+        var v = (el.getAttribute('data-category')||'');
+        el.classList.toggle('active', state.categories.map(function(x){return x.toLowerCase();}).indexOf(v.toLowerCase()) !== -1);
       });
-      apply();
+      state.page = 1;
+      load();
     });
   }
   if (tagList) {
@@ -533,19 +534,20 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
       var a = e.target.closest('a[data-tag]');
       if (!a) return;
       e.preventDefault();
-      var sel = (a.getAttribute('data-tag')||'').toLowerCase();
-      var idx = state.tags.indexOf(sel);
+      var sel = (a.getAttribute('data-tag')||'');
+      var idx = state.tags.map(function(v){return v.toLowerCase();}).indexOf(sel.toLowerCase());
       if (idx === -1) state.tags.push(sel); else state.tags.splice(idx, 1);
       Array.prototype.forEach.call(tagList.querySelectorAll('a'), function(el){
-        var v = (el.getAttribute('data-tag')||'').toLowerCase();
-        el.classList.toggle('active', state.tags.indexOf(v) !== -1);
+        var v = (el.getAttribute('data-tag')||'');
+        el.classList.toggle('active', state.tags.map(function(x){return x.toLowerCase();}).indexOf(v.toLowerCase()) !== -1);
       });
-      apply();
+      state.page = 1;
+      load();
     });
   }
   // initial paint
   attachPager();
-  apply();
+  load();
 })();
 </script>
 ${renderFooter()}
