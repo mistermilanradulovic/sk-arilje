@@ -527,6 +527,34 @@ ${renderAsides()}
 </main>
 <script>
 (function(){
+  // Ensure the correct nav item is marked active on blog pages
+  function markActiveBlog() {
+    try {
+      var candidates = document.querySelectorAll('#mobile-menu a, .mobile-menu a');
+      candidates.forEach(function(a){
+        a.classList.remove('active');
+        var li = a.closest('li');
+        if (li) li.classList.remove('active');
+      });
+      var blogLinks = document.querySelectorAll('#mobile-menu a[href="/blog/"], .mobile-menu a[href="/blog/"]');
+      blogLinks.forEach(function(a){
+        a.classList.add('active');
+        var li = a.closest('li');
+        if (li) li.classList.add('active');
+      });
+      var homeLinks = document.querySelectorAll('#mobile-menu a[href="/index.html"], .mobile-menu a[href="/index.html"]');
+      homeLinks.forEach(function(a){
+        a.classList.remove('active');
+        var li = a.closest('li');
+        if (li) li.classList.remove('active');
+      });
+    } catch (e) {}
+  }
+  // Run immediately and after menu plugins initialize
+  markActiveBlog();
+  setTimeout(markActiveBlog, 300);
+  setTimeout(markActiveBlog, 800);
+
   var qEl = document.getElementById('blog-search');
   var grid = document.getElementById('blog-grid');
   var catList = document.getElementById('blog-categories');
@@ -706,6 +734,35 @@ ${renderAsides()}
     </div>
   </section>
 </main>
+<script>
+(function(){
+  function markActiveBlog() {
+    try {
+      var candidates = document.querySelectorAll('#mobile-menu a, .mobile-menu a');
+      candidates.forEach(function(a){
+        a.classList.remove('active');
+        var li = a.closest('li');
+        if (li) li.classList.remove('active');
+      });
+      var blogLinks = document.querySelectorAll('#mobile-menu a[href="/blog/"], .mobile-menu a[href="/blog/"]');
+      blogLinks.forEach(function(a){
+        a.classList.add('active');
+        var li = a.closest('li');
+        if (li) li.classList.add('active');
+      });
+      var homeLinks = document.querySelectorAll('#mobile-menu a[href="/index.html"], .mobile-menu a[href="/index.html"]');
+      homeLinks.forEach(function(a){
+        a.classList.remove('active');
+        var li = a.closest('li');
+        if (li) li.classList.remove('active');
+      });
+    } catch (e) {}
+  }
+  markActiveBlog();
+  setTimeout(markActiveBlog, 300);
+  setTimeout(markActiveBlog, 800);
+})();
+</script>
 ${renderFooter()}
 `;
 }
