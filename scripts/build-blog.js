@@ -57,6 +57,45 @@ function renderHead({ title, description }) {
   <link rel="stylesheet" href="/assets/css/odometer.css">
   <link rel="stylesheet" href="/assets/css/default.css">
   <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    /* Keep hero/title backgrounds crisp and fully covered */
+    .page-title-area {
+      background-position: center center !important;
+      background-size: cover !important;
+      background-repeat: no-repeat !important;
+    }
+    /* Index card thumbnails: consistent aspect, no distortion */
+    .tp-post-thumb img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+    }
+    @media (min-width: 1200px) {
+      .tp-post-thumb img { height: 260px; }
+    }
+    /* Post inline/hero image: scale responsively */
+    .blog-details-thumb img,
+    .blog-details-content img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 20px auto;
+    }
+    /* Rich text figures */
+    .blog-details-content figure {
+      margin: 0 0 20px 0;
+    }
+    .blog-details-content figure img {
+      margin: 0;
+    }
+    .blog-details-content figcaption {
+      text-align: center;
+      font-size: 0.95rem;
+      opacity: .8;
+      margin-top: 6px;
+    }
+  </style>
 </head>
 <body>
   <div class="mouseCursor cursor-outer"></div>
@@ -160,12 +199,12 @@ function renderFooter() {
 function renderIndex(posts) {
   const items = posts.map(p => {
     const dateStr = p.date ? format(new Date(p.date), 'dd.MM.yyyy') : '';
-    const img = p.heroImage || '/assets/img/blog/blog-default.jpg';
+    const img = p.heroThumb || p.heroImage || '/assets/img/blog/blog-default.jpg';
     const desc = sanitizeHtml(p.description || '', { allowedTags: [], allowedAttributes: {} });
     return `<div class="col-xl-4 col-lg-4 col-md-6 mb-30">
       <article class="tp-post tp-post-grid">
         <div class="tp-post-thumb p-relative fix">
-          <a href="/blog/${p.slug}/"><img src="${img}" alt="${htmlEscape(p.title)}"></a>
+          <a href="/blog/${p.slug}/"><img src="${img}" alt="${htmlEscape(p.title)}" loading="lazy" decoding="async"></a>
         </div>
         <div class="tp-post-content">
           <div class="tp-post-meta">
@@ -208,8 +247,8 @@ ${renderFooter()}
 
 function renderPost(post) {
   const dateStr = post.date ? format(new Date(post.date), 'dd.MM.yyyy') : '';
-  const img = post.heroImage || '/assets/img/blog/blog-default.jpg';
-  const headerBg = post.heroImage || '/assets/img/bg/page-title-bg.jpg';
+  const img = post.heroContent || post.heroImage || '/assets/img/blog/blog-default.jpg';
+  const headerBg = post.heroFull || post.heroImage || '/assets/img/bg/page-title-bg.jpg';
   return `
 ${renderHead({ title: `${post.title} | Streljački klub Arilje`, description: post.description || '' })}
 <main>
@@ -231,7 +270,7 @@ ${renderHead({ title: `${post.title} | Streljački klub Arilje`, description: po
         <div class="col-lg-10">
           <div class="blog-details-wrapper">
             <div class="blog-details-thumb mb-30">
-              <img src="${img}" alt="${htmlEscape(post.title)}">
+              <img src="${img}" alt="${htmlEscape(post.title)}" loading="eager" decoding="async" fetchpriority="high">
             </div>
             <div class="blog-details-content">
               ${post.htmlBody}
@@ -269,9 +308,27 @@ async function fetchPosts() {
     const title = f.title || 'Bez naslova';
     const slug = (f.slug || slugify(String(title), { lower: true, strict: true })) || String(item.sys.id);
     const description = f.description || '';
+    // Helper to build transformed Contentful image URLs
+    const buildImageUrl = (u, params) => {
+      if (!u) return '';
+      const base = u.startsWith('//') ? `https:${u}` : u;
+      const joiner = base.includes('?') ? '&' : '?';
+      return `${base}${joiner}${params}`;
+    };
     let heroImage = '';
+    let heroThumb = '';
+    let heroContent = '';
+    let heroFull = '';
     if (f.heroImage && f.heroImage.fields && f.heroImage.fields.file && f.heroImage.fields.file.url) {
-      heroImage = f.heroImage.fields.file.url.startsWith('//') ? `https:${f.heroImage.fields.file.url}` : f.heroImage.fields.file.url;
+      const raw = f.heroImage.fields.file.url;
+      const base = raw.startsWith('//') ? `https:${raw}` : raw;
+      heroImage = base;
+      // Thumbnails for cards (approx 720x400), webp if possible
+      heroThumb = buildImageUrl(raw, 'w=720&h=400&fit=fill&fm=webp&q=80');
+      // In-post main image (limit width to 1280)
+      heroContent = buildImageUrl(raw, 'w=1280&fm=webp&q=82');
+      // Header background (wide)
+      heroFull = buildImageUrl(raw, 'w=1920&fm=webp&q=82');
     }
     const body = f.body || '';
     let htmlBody = '';
@@ -295,6 +352,9 @@ async function fetchPosts() {
       date: f.date || item.sys.createdAt,
       description,
       heroImage,
+      heroThumb,
+      heroContent,
+      heroFull,
       htmlBody
     };
   });
