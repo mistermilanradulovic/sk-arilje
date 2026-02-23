@@ -28,6 +28,8 @@ exports.handler = async (event) => {
     params.set('fields.postSlug', slug);
     params.set('order', '-sys.createdAt');
     params.set('limit', String(limit));
+    // fetch all locales to avoid missing values due to locale mismatch
+    params.set('locale', '*');
     try {
       const r = await fetch(url.toString(), {
         headers: { 'Authorization': `Bearer ${cda}`, 'Accept': 'application/json' }
@@ -37,12 +39,22 @@ exports.handler = async (event) => {
         return { statusCode: r.status, headers, body: JSON.stringify({ error: 'Upstream error', detail: t }) };
       }
       const data = await r.json();
+      function firstLocale(obj) {
+        if (!obj) return '';
+        if (typeof obj === 'string') return obj;
+        if (typeof obj === 'object') {
+          for (const k of Object.keys(obj)) {
+            if (typeof obj[k] === 'string' && obj[k]) return obj[k];
+          }
+        }
+        return '';
+      }
       const items = (data.items || []).map(it => {
         const f = it.fields || {};
         return {
           id: it.sys && it.sys.id,
-          name: (f.name && f.name[locale]) || (f.name && f.name['en-US']) || 'Anonimno',
-          message: (f.message && f.message[locale]) || (f.message && f.message['en-US']) || '',
+          name: firstLocale(f.name) || 'Anonimno',
+          message: firstLocale(f.message) || '',
           createdAt: it.sys && it.sys.createdAt
         };
       });
