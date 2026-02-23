@@ -65,8 +65,26 @@ function renderHead({ title, description }) {
       background-repeat: no-repeat !important;
     }
     /* Filter UI — highlight active selections, blend with theme */
-    .sidebar-category a.active {
+    .sidebar-category a {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      margin: 0 8px 8px 0;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 2px;
+      line-height: 1.1;
+      background: #fff;
+      color: inherit;
+      transition: all .2s ease;
+    }
+    .sidebar-category a:hover {
+      border-color: var(--clr-theme-2);
       color: var(--clr-theme-2);
+    }
+    .sidebar-category a.active {
+      background: var(--clr-theme-2);
+      color: #fff;
+      border-color: var(--clr-theme-2);
       font-weight: 600;
     }
     .sidebar-blog-tags .blog-tag {
@@ -76,6 +94,8 @@ function renderHead({ title, description }) {
       border-radius: 2px;
       display: inline-block;
       transition: all .2s ease;
+      background: #fff;
+      color: inherit;
     }
     .sidebar-blog-tags .blog-tag.active {
       background: var(--clr-theme-2);
@@ -341,7 +361,7 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
                 <!-- populated dynamically with selected filters -->
               </div>
               <div class="blog-filter-reset">
-                <a href="#" id="blog-clear-filters" class="reset-link"><i class="fal fa-times-circle"></i> Prikaži sve</a>
+                <a href="#" id="blog-clear-filters" class="reset-link" style="display:none;"><i class="fal fa-times-circle"></i> Prikaži sve</a>
               </div>
             </div>
             ${categories.length ? `
@@ -397,7 +417,7 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
   var tagList = document.getElementById('blog-tags');
   var activeBox = document.getElementById('blog-active');
   var clearBtn = document.getElementById('blog-clear-filters');
-  var state = { q: '', category: '', tag: '' };
+  var state = { q: '', categories: [], tags: [] };
   function matches(card) {
     var t = (card.getAttribute('data-title')||'');
     var d = (card.getAttribute('data-desc')||'');
@@ -407,28 +427,33 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
       var m = t.indexOf(state.q) !== -1 || d.indexOf(state.q) !== -1;
       if (!m) return false;
     }
-    if (state.category) {
-      if (cats.split(',').indexOf(state.category) === -1) return false;
+    if (state.categories && state.categories.length) {
+      var postCats = cats ? cats.split(',') : [];
+      var any = state.categories.some(function(c){ return postCats.indexOf(c) !== -1; });
+      if (!any) return false;
     }
-    if (state.tag) {
-      if (tags.split(',').indexOf(state.tag) === -1) return false;
+    if (state.tags && state.tags.length) {
+      var postTags = tags ? tags.split(',') : [];
+      var anyT = state.tags.some(function(tg){ return postTags.indexOf(tg) !== -1; });
+      if (!anyT) return false;
     }
     return true;
   }
   function renderActive() {
     if (!activeBox) return;
     var parts = [];
-    if (state.category) {
-      parts.push('<span class="badge" data-kind="category">'+escapeHtml(state.category)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
-    }
-    if (state.tag) {
-      parts.push('<span class="badge" data-kind="tag">'+escapeHtml(state.tag)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
-    }
+    (state.categories||[]).forEach(function(c){
+      parts.push('<span class="badge" data-kind="category" data-val="'+escapeHtml(c)+'">'+escapeHtml(c)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
+    });
+    (state.tags||[]).forEach(function(t){
+      parts.push('<span class="badge" data-kind="tag" data-val="'+escapeHtml(t)+'">'+escapeHtml(t)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
+    });
     if (state.q) {
-      parts.push('<span class="badge" data-kind="q">'+escapeHtml(state.q)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
+      parts.push('<span class="badge" data-kind="q" data-val="'+escapeHtml(state.q)+'">'+escapeHtml(state.q)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
     }
     activeBox.innerHTML = parts.join(' ');
     activeBox.style.display = parts.length ? 'block' : 'none';
+    if (clearBtn) clearBtn.style.display = parts.length ? 'inline-flex' : 'none';
   }
   function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
   function apply() {
@@ -452,9 +477,11 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
       if (!a) return;
       e.preventDefault();
       var sel = (a.getAttribute('data-category')||'').toLowerCase();
-      state.category = (state.category === sel) ? '' : sel;
+      var idx = state.categories.indexOf(sel);
+      if (idx === -1) state.categories.push(sel); else state.categories.splice(idx, 1);
       Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){
-        el.classList.toggle('active', (el.getAttribute('data-category')||'').toLowerCase() === state.category && !!state.category);
+        var v = (el.getAttribute('data-category')||'').toLowerCase();
+        el.classList.toggle('active', state.categories.indexOf(v) !== -1);
       });
       apply();
     });
@@ -465,9 +492,11 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
       if (!a) return;
       e.preventDefault();
       var sel = (a.getAttribute('data-tag')||'').toLowerCase();
-      state.tag = (state.tag === sel) ? '' : sel;
+      var idx = state.tags.indexOf(sel);
+      if (idx === -1) state.tags.push(sel); else state.tags.splice(idx, 1);
       Array.prototype.forEach.call(tagList.querySelectorAll('a'), function(el){
-        el.classList.toggle('active', (el.getAttribute('data-tag')||'').toLowerCase() === state.tag && !!state.tag);
+        var v = (el.getAttribute('data-tag')||'').toLowerCase();
+        el.classList.toggle('active', state.tags.indexOf(v) !== -1);
       });
       apply();
     });
@@ -479,12 +508,19 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
       var badge = e.target.closest('.badge');
       if (!badge) return;
       var kind = badge.getAttribute('data-kind');
+      var val = (badge.getAttribute('data-val')||'').toLowerCase();
       if (kind === 'category') {
-        state.category = '';
-        if (catList) Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){ el.classList.remove('active'); });
+        var i = state.categories.indexOf(val);
+        if (i !== -1) state.categories.splice(i,1);
+        if (catList) Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){
+          if ((el.getAttribute('data-category')||'').toLowerCase() === val) el.classList.remove('active');
+        });
       } else if (kind === 'tag') {
-        state.tag = '';
-        if (tagList) Array.prototype.forEach.call(tagList.querySelectorAll('a'), function(el){ el.classList.remove('active'); });
+        var j = state.tags.indexOf(val);
+        if (j !== -1) state.tags.splice(j,1);
+        if (tagList) Array.prototype.forEach.call(tagList.querySelectorAll('a'), function(el){
+          if ((el.getAttribute('data-tag')||'').toLowerCase() === val) el.classList.remove('active');
+        });
       } else if (kind === 'q') {
         state.q = '';
         if (qEl) qEl.value = '';
@@ -496,8 +532,8 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
     clearBtn.addEventListener('click', function(e){
       e.preventDefault();
       state.q = '';
-      state.category = '';
-      state.tag = '';
+      state.categories = [];
+      state.tags = [];
       if (qEl) qEl.value = '';
       if (catList) Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){ el.classList.remove('active'); });
       if (tagList) Array.prototype.forEach.call(tagList.querySelectorAll('a'), function(el){ el.classList.remove('active'); });
