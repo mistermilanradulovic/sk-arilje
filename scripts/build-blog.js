@@ -433,6 +433,10 @@ ${renderHead({ title: `${post.title} | Streljački klub Arilje`, description: po
             <div class="blog-details-thumb mb-30">
               <img src="${img}" alt="${htmlEscape(post.title)}" loading="eager" decoding="async" fetchpriority="high">
             </div>
+            ${post.tags && post.tags.length ? `
+            <div class="sidebar-blog-tags mb-20">
+              ${post.tags.map(t => `<a href="/blog/" class="blog-tag">#${htmlEscape(t)}</a>`).join(' ')}
+            </div>` : ''}
             <div class="blog-details-content">
               ${post.htmlBody}
             </div>
@@ -493,8 +497,36 @@ async function fetchPosts() {
     }
     const body = f.body || '';
     // Optional taxonomy
-    const categories = Array.isArray(f.categories) ? f.categories : (f.category ? [ f.category ] : []);
-    const tags = Array.isArray(f.tags) ? f.tags : [];
+    function normalizeArray(value) {
+      if (!value) return [];
+      if (Array.isArray(value)) return value;
+      if (typeof value === 'string') return value.split(',').map(s => s.trim()).filter(Boolean);
+      return [ value ];
+    }
+    function extractLabel(v) {
+      if (!v) return '';
+      if (typeof v === 'string') return v;
+      if (v.fields && (v.fields.title || v.fields.name)) return v.fields.title || v.fields.name;
+      if (v.sys && v.sys.id) return v.sys.id;
+      return String(v);
+    }
+    let categories = [];
+    // fields.categories can be array of strings or references; fields.category single string
+    normalizeArray(f.categories).forEach(v => { const lbl = extractLabel(v); if (lbl) categories.push(lbl); });
+    if (f.category) categories.push(extractLabel(f.category));
+    categories = Array.from(new Set(categories.map(s => String(s))));
+
+    let tags = [];
+    // fields.tags can be array/string/references; fields.tag single
+    normalizeArray(f.tags).forEach(v => { const lbl = extractLabel(v); if (lbl) tags.push(lbl); });
+    if (f.tag) tags.push(extractLabel(f.tag));
+    // Contentful metadata tags (system-level)
+    if (item.metadata && Array.isArray(item.metadata.tags)) {
+      item.metadata.tags.forEach(t => {
+        if (t && t.sys && t.sys.id) tags.push(t.sys.id);
+      });
+    }
+    tags = Array.from(new Set(tags.map(s => String(s))));
     let htmlBody = '';
     if (body && body.nodeType) {
       // Rich text
