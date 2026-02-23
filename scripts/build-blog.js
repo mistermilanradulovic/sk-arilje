@@ -745,10 +745,6 @@ ${renderAsides()}
             <div class="blog-details-content">
               ${post.htmlBody}
             </div>
-            <div class="mt-40" id="comments">
-              <h4 class="mb-15">Komentari</h4>
-              <div id="disqus_thread"></div>
-            </div>
             <div class="blog-share mb-30">
               <div class="share-icon"><i class="flaticon-119-share"></i></div>
               <div class="social-links blog-social">
@@ -777,6 +773,20 @@ ${renderAsides()}
                 </div>`).join('')}
               </div>
             </div>` : ''}
+            <div class="mt-40" id="comments">
+              <h4 class="mb-15">Komentari</h4>
+              <div id="comment-list" class="mb-20" aria-live="polite"></div>
+              <form id="comment-form" class="comment-form">
+                <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+                <div class="row g-3">
+                  <div class="col-md-6"><input class="form-control" type="text" name="name" placeholder="Vaše ime*" required></div>
+                  <div class="col-md-6"><input class="form-control" type="email" name="email" placeholder="E-mail (opciono)"></div>
+                  <div class="col-12"><textarea class="form-control" name="message" rows="4" placeholder="Vaš komentar*" required></textarea></div>
+                  <div class="col-12"><button class="arm-btn" type="submit"><span class="circle-btn"><i class="fal fa-paper-plane"></i></span>Pošalji komentar</button></div>
+                </div>
+                <p id="comment-status" class="mt-2" style="opacity:.85"></p>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -798,16 +808,55 @@ ${renderAsides()}
   document.querySelectorAll('.share-btn').forEach(function(a){
     a.addEventListener('click', function(e){ e.preventDefault(); openShare(a.getAttribute('data-net')); });
   });
-  // Disqus embed
-  var shortname = ${JSON.stringify(DISQUS_SHORTNAME)};
-  if (shortname) {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://' + shortname + '.disqus.com/embed.js';
-    s.setAttribute('data-timestamp', +new Date());
-    (d.head || d.body).appendChild(s);
-  } else {
-    var c = document.getElementById('disqus_thread');
-    if (c) c.innerHTML = '<p style="opacity:.85">Komentari nisu podešeni.</p>';
+  // Contentful-native comments
+  var slug = ${JSON.stringify(post.slug)};
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+  function fmt(iso){try{var d=new Date(iso);return d.toLocaleDateString('sr-Latn-RS',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase()+'.';}catch(e){return ''}}
+  function renderComments(list){
+    var box = document.getElementById('comment-list'); if (!box) return;
+    if (!list || !list.length) { box.innerHTML = '<p style="opacity:.8">Još uvek nema komentara.</p>'; return; }
+    box.innerHTML = list.map(function(it){
+      return '<div class="mb-15"><strong>'+esc(it.name||'Anonimno')+'</strong> <span style="opacity:.7">— '+fmt(it.createdAt)+'</span><div>'+esc(it.message||'')+'</div></div>';
+    }).join('');
+  }
+  function loadComments(){
+    fetch('/.netlify/functions/comments?slug='+encodeURIComponent(slug))
+      .then(function(r){return r.json();})
+      .then(function(d){ renderComments(d.items || []); })
+      .catch(function(){});
+  }
+  loadComments();
+  var form = document.getElementById('comment-form');
+  if (form) {
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var fd = new FormData(form);
+      var payload = {
+        slug: slug,
+        name: fd.get('name')||'',
+        email: fd.get('email')||'',
+        message: fd.get('message')||'',
+        website: fd.get('website')||''
+      };
+      var status = document.getElementById('comment-status');
+      if (status) status.textContent = 'Slanje komentara…';
+      fetch('/.netlify/functions/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function(r){ return r.json().then(function(j){ return { ok:r.ok, j }; }); })
+      .then(function(res){
+        if (res.ok) {
+          if (status) status.textContent = 'Komentar objavljen.';
+          form.reset();
+          loadComments();
+        } else {
+          if (status) status.textContent = 'Greška pri slanju komentara.';
+        }
+      }).catch(function(){
+        if (status) status.textContent = 'Greška pri slanju komentara.';
+      });
+    });
   }
   function markActiveBlog() {
     try {
