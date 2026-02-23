@@ -237,12 +237,26 @@
 				}
 			}
 
-			// main desktop nav
-			var mainNav = document.querySelector('nav#mobile-menu');
-			mark(mainNav);
-			// side/mobile menu (populated by meanmenu)
-			var sideMobile = document.querySelector('.side-info .mobile-menu');
-			mark(sideMobile);
+			function markMenus() {
+				// main desktop nav
+				var mainNav = document.querySelector('nav#mobile-menu');
+				mark(mainNav);
+				// side/mobile menu (populated by meanmenu)
+				var sideMobile = document.querySelector('.side-info .mobile-menu');
+				mark(sideMobile);
+				// meanmenu container (if different)
+				var meanNav = document.querySelector('.mean-nav');
+				mark(meanNav);
+			}
+			markMenus();
+			// Re-mark after meanmenu populates
+			var mobileHost = document.querySelector('.side-info .mobile-menu') || document.querySelector('.mobile-menu');
+			if (mobileHost && window.MutationObserver) {
+				var obs = new MutationObserver(function(){ markMenus(); });
+				obs.observe(mobileHost, { childList: true, subtree: true });
+			}
+			// Also re-run on load and shortly after to catch late init
+			window.addEventListener('load', function(){ setTimeout(markMenus, 50); setTimeout(markMenus, 400); });
 
 			// Disable specific items in side menu only
 			(function disableSideMenuLinks() {
