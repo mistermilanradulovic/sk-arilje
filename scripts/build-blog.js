@@ -480,7 +480,6 @@ ${renderAsides()}
                 </div>
               </div>
             </div>
-            ${categories.length ? `
             <div class="blog-sidebar-widget mb-30">
               <h4 class="sidebar-widget-title">Kategorije</h4>
               <div class="category-list sidebar-category">
@@ -488,7 +487,7 @@ ${renderAsides()}
                   ${categories.map(c => `<li><a href="#" data-category="${htmlEscape(c)}">${htmlEscape(c)}</a></li>`).join('')}
                 </ul>
               </div>
-            </div>` : ''}
+            </div>
             <div class="blog-sidebar-widget mb-30">
               <h4 class="sidebar-widget-title">Skorašnje objave</h4>
               <div class="sidebar-blog-list">
@@ -512,13 +511,12 @@ ${renderAsides()}
                 `).join('')}
               </div>
             </div>
-            ${tags.length ? `
             <div class="blog-sidebar-widget mb-30">
               <h4 class="sidebar-widget-title">Oznake</h4>
               <div class="sidebar-blog-tags" id="blog-tags">
                 ${tags.map(t => `<a href="#" class="blog-tag" data-tag="${htmlEscape(t)}">${htmlEscape(t)}</a>`).join(' ')}
               </div>
-            </div>` : ''}
+            </div>
           </div>
         </div>
       </div>
