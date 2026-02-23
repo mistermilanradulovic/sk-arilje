@@ -209,10 +209,11 @@ ${renderFooter()}
 function renderPost(post) {
   const dateStr = post.date ? format(new Date(post.date), 'dd.MM.yyyy') : '';
   const img = post.heroImage || '/assets/img/blog/blog-default.jpg';
+  const headerBg = post.heroImage || '/assets/img/bg/page-title-bg.jpg';
   return `
 ${renderHead({ title: `${post.title} | Streljački klub Arilje`, description: post.description || '' })}
 <main>
-  <section class="page-title-area" data-background="/assets/img/bg/page-title-bg.jpg">
+  <section class="page-title-area" data-background="${headerBg}">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-10">
