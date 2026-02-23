@@ -215,26 +215,26 @@
 				// reset existing
 				container.querySelectorAll('a.active').forEach(function(a){ a.classList.remove('active'); });
 				container.querySelectorAll('li.active').forEach(function(li){ li.classList.remove('active'); });
-				if (current === '/blog/') {
-					container.querySelectorAll('a[href="/blog/"]').forEach(function(a){
+				var links = container.querySelectorAll('a[href]');
+				links.forEach(function (a) {
+					var href = a.getAttribute('href') || '';
+					if (!href || href === '#' || href === 'javascript:void(0)') return;
+					// Normalize href key
+					var key;
+					if (href === '/' || href === 'index.html') {
+						key = 'index.html';
+					} else if (href.charAt(0) === '/' && href.slice(-1) === '/' && href !== '/') {
+						key = href; // pretty URL like /blog/
+					} else {
+						var file = href.split('/').pop();
+						key = file || 'index.html';
+					}
+					if (key === current) {
 						a.classList.add('active');
 						var li = a.closest('li');
 						if (li) li.classList.add('active');
-					});
-				} else {
-					var links = container.querySelectorAll('a[href]');
-					links.forEach(function (a) {
-						var href = a.getAttribute('href') || '';
-						if (href === '#' || href === 'javascript:void(0)') return;
-						var file = href.split('/').pop();
-						if (file === '') file = 'index.html';
-						if (file === current) {
-							a.classList.add('active');
-							var li = a.closest('li');
-							if (li) li.classList.add('active');
-						}
-					});
-				}
+					}
+				});
 			}
 
 			function markMenus() {
