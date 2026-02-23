@@ -64,6 +64,27 @@ function renderHead({ title, description }) {
       background-size: cover !important;
       background-repeat: no-repeat !important;
     }
+    /* Compact heading variant for blog index */
+    .page-title-area.page-title--compact {
+      padding-top: 60px !important;
+      padding-bottom: 50px !important;
+      min-height: 0 !important;
+    }
+    @media (min-width: 768px) {
+      .page-title-area.page-title--compact {
+        padding-top: 80px !important;
+        padding-bottom: 60px !important;
+      }
+    }
+    @media (min-width: 1200px) {
+      .page-title-area.page-title--compact {
+        padding-top: 90px !important;
+        padding-bottom: 70px !important;
+      }
+    }
+    .page-title-area.page-title--compact .page-title {
+      margin-bottom: 6px !important;
+    }
     /* Index card thumbnails: consistent aspect, no distortion */
     .tp-post-thumb img {
       width: 100%;
@@ -221,7 +242,7 @@ function renderIndex(posts) {
   return `
 ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije vesti i objave' })}
 <main>
-  <section class="page-title-area" data-background="/assets/img/bg/page-title-bg.jpg">
+  <section class="page-title-area page-title--compact" data-background="/assets/img/bg/page-title-bg.jpg">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-8">
