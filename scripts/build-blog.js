@@ -10,6 +10,7 @@ const contentful = require('contentful');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_DIR = path.join(ROOT, 'blog');
+const DISQUS_SHORTNAME = process.env.DISQUS_SHORTNAME || '';
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -738,12 +739,15 @@ ${renderAsides()}
             <div class="blog-details-thumb mb-30">
               <img src="${img}" alt="${htmlEscape(post.title)}" loading="eager" decoding="async" fetchpriority="high">
             </div>
-            ${post.tags && post.tags.length ? `
             <div class="sidebar-blog-tags mb-20">
               ${post.tags.map(t => `<a href="/blog/" class="blog-tag">#${htmlEscape(t)}</a>`).join(' ')}
-            </div>` : ''}
+            </div>
             <div class="blog-details-content">
               ${post.htmlBody}
+            </div>
+            <div class="mt-40" id="comments">
+              <h4 class="mb-15">Komentari</h4>
+              <div id="disqus_thread"></div>
             </div>
             <div class="blog-share mb-30">
               <div class="share-icon"><i class="flaticon-119-share"></i></div>
@@ -794,6 +798,17 @@ ${renderAsides()}
   document.querySelectorAll('.share-btn').forEach(function(a){
     a.addEventListener('click', function(e){ e.preventDefault(); openShare(a.getAttribute('data-net')); });
   });
+  // Disqus embed
+  var shortname = ${JSON.stringify(DISQUS_SHORTNAME)};
+  if (shortname) {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://' + shortname + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  } else {
+    var c = document.getElementById('disqus_thread');
+    if (c) c.innerHTML = '<p style="opacity:.85">Komentari nisu podešeni.</p>';
+  }
   function markActiveBlog() {
     try {
       var candidates = document.querySelectorAll('#mobile-menu a, .mobile-menu a');
