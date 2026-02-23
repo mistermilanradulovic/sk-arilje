@@ -1720,7 +1720,8 @@
         function fmtDate(iso) {
             try {
                 var d = new Date(iso);
-                var parts = d.toLocaleDateString('sr-RS', { day: '2-digit', month: 'short', year: 'numeric' });
+                // Use Serbian Latin locale to avoid Cyrillic month names
+                var parts = d.toLocaleDateString('sr-Latn-RS', { day: '2-digit', month: 'short', year: 'numeric' });
                 parts = parts.toUpperCase();
                 if (!/[\\.!?]$/.test(parts)) parts += '.';
                 return parts;
