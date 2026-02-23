@@ -105,19 +105,53 @@ function renderHead({ title, description }) {
 
 function renderFooter() {
   return `
+  <!-- preloader -->
+  <div id="preloader">
+    <div id="ctn-preloader" class="ctn-preloader">
+      <div class="animation-preloader">
+        <div class="spinner"></div>
+        <div class="txt-loading">
+          <span data-text-preloader="A" class="letters-loading">A</span>
+          <span data-text-preloader="R" class="letters-loading">R</span>
+          <span data-text-preloader="M" class="letters-loading">M</span>
+          <span data-text-preloader="A" class="letters-loading">A</span>
+          <span data-text-preloader="D" class="letters-loading">D</span>
+          <span data-text-preloader="O" class="letters-loading">O</span>
+        </div>
+      </div>
+      <div class="loader">
+        <div class="row">
+          <div class="col-3 loader-section section-left"><div class="bg"></div></div>
+          <div class="col-3 loader-section section-left"><div class="bg"></div></div>
+          <div class="col-3 loader-section section-right"><div class="bg"></div></div>
+          <div class="col-3 loader-section section-right"><div class="bg"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- back to top -->
+  <div class="progress-wrap">
+    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+      <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+    </svg>
+  </div>
+  <!-- JS stack aligned with site pages -->
   <script src="/assets/js/vendor/jquery-3.6.0.min.js"></script>
+  <script src="/assets/js/vendor/waypoints.min.js"></script>
   <script src="/assets/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/meanmenu.js"></script>
   <script src="/assets/js/swiper-bundle.min.js"></script>
-  <script src="/assets/js/jquery.magnific-popup.min.js"></script>
-  <script src="/assets/js/jquery.nice-select.min.js"></script>
-  <script src="/assets/js/slick.min.js"></script>
-  <script src="/assets/js/jquery.meanmenu.min.js"></script>
-  <script src="/assets/js/odometer.min.js"></script>
-  <script src="/assets/js/appear.min.js"></script>
-  <script src="/assets/js/waypoints.min.js"></script>
-  <script src="/assets/js/jquery.scrollUp.min.js"></script>
-  <script src="/assets/js/imagesloaded.pkgd.min.js"></script>
+  <script src="/assets/js/magnific-popup.min.js"></script>
   <script src="/assets/js/backToTop.js"></script>
+  <script src="/assets/js/nice-select.min.js"></script>
+  <script src="/assets/js/ajax-form.js"></script>
+  <script src="/assets/js/wow.min.js"></script>
+  <script src="/assets/js/isotope.pkgd.min.js"></script>
+  <script src="/assets/js/imagesloaded.pkgd.min.js"></script>
+  <script src="/assets/js/jquery.appear.js"></script>
+  <script src="/assets/js/jquery.odometer.min.js"></script>
+  <script src="/assets/js/slick.min.js"></script>
+  <script src="/assets/js/js_circle-progress.min.js"></script>
   <script src="/assets/js/main.js"></script>
 </body>
 </html>`;
