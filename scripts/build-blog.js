@@ -58,6 +58,7 @@ function renderHead({ title, description }) {
   <link rel="stylesheet" href="/assets/css/default.css">
   <link rel="stylesheet" href="/assets/css/style.css">
   <style>
+    .accent-orange { color: var(--clr-theme-2) !important; }
     /* Keep hero/title backgrounds crisp and fully covered */
     .page-title-area {
       background-position: center center !important;
@@ -343,7 +344,7 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
         <div class="col-lg-8">
           <div class="page-title-wrapper">
             <h1 class="page-title mb-10">Blog</h1>
-            <p>Najnovije vesti i objave kluba.</p>
+            <p>Najnovije <span class="accent-orange">vesti</span> i <span class="accent-orange">objave</span> kluba.</p>
           </div>
         </div>
       </div>
