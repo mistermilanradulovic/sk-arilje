@@ -24,6 +24,25 @@
     <link rel="stylesheet" href="assets/css/odometer.css">
     <link rel="stylesheet" href="assets/css/default.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Page-specific header tweaks: align nav closer to the call-us block */
+        .header-main-right-header2 {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .header-main-right-header2 .main-menu2 {
+            margin-left: auto;
+            margin-right: 10px;
+        }
+        @media (min-width: 1200px) {
+            .header-main-right-header2 .main-menu2 nav#mobile-menu > ul {
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+    </style>
 </head>
 
 <body>
