@@ -564,7 +564,7 @@ function renderPost(post) {
   return `
 ${renderHead({ title: `${post.title} | Streljački klub Arilje`, description: post.description || '' })}
 <main>
-  <section class="page-title-area" data-background="${headerBg}">
+  <section class="page-title-area page-title--compact" data-background="${headerBg}">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-10">
