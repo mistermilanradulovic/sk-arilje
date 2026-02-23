@@ -1731,7 +1731,12 @@
         function render(items){
             var wrap = document.getElementById('footer-latest-list');
             if (!wrap) return;
-            var html = (items||[]).slice(0,2).map(function(it){
+            var list = Array.isArray(items) ? items.slice(0,2) : [];
+            if (!list.length) {
+                wrap.innerHTML = '<p style="opacity:.9;margin:0;">Trenutno nema vesti.</p>';
+                return;
+            }
+            var html = list.map(function(it){
                 var img = it.heroThumb || it.heroImage || '/assets/img/blog/blog-default.jpg';
                 var href = '/blog/' + esc(it.slug) + '/';
                 var date = fmtDate(it.date);
@@ -1758,7 +1763,9 @@
         function load(){
             fetch('/.netlify/functions/blog?page=1&pageSize=2').then(function(r){return r.json();}).then(function(data){
                 render(data && data.items);
-            }).catch(function(){ /* keep fallback */ });
+            }).catch(function(){
+                render([]);
+            });
         }
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
             load();
