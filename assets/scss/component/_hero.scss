@@ -1,0 +1,108 @@
+/*----------------------------------------
+	05. hero css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.banner-bg1 {
+	position: absolute;
+	content: "";
+	width: 100%;
+	height: 100%;
+	top: 0;
+	inset-inline-start: 0;
+	z-index: -1;
+
+	&:before {
+		position: absolute;
+		content: "";
+		width: 100%;
+		height: 100%;
+		top: 0;
+		inset-inline-start: 0;
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, .2) 100%);
+	}
+}
+
+.arm-hero-btn-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 40px;
+}
+
+//hero shape
+.arm-hero-shape {
+	position: absolute;
+
+	@media #{$sm,$xs} {
+		display: none;
+	}
+
+	&.arm-shape-a-1 {
+		top: 28%;
+		inset-inline-start: 63.5%;
+		@include animate(rotate, 8s, linear, infinite);
+	}
+
+	&.arm-shape-a-2 {
+		top: 60%;
+		inset-inline-start: 70%;
+		@include animate(rotate, 8s, linear, infinite);
+
+		img {
+			width: 36px;
+		}
+	}
+
+	&.arm-shape-a-4 {
+		bottom: 127px;
+		inset-inline-start: 49%;
+	}
+
+	&.arm-shape-c-1 {
+		bottom: 130px;
+		inset-inline-start: 72%;
+		opacity: .8;
+		width: 137px;
+	}
+}
+
+// play button shape
+.armado-shape {
+	position: absolute;
+	inset-inline-end: 100px;
+	top: 50%;
+	transform: translateY(-50%) rotate(-90deg) translateX(50%);
+	z-index: -1;
+	transform-origin: 100% 50%;
+
+	@include rtl {
+		transform: translateY(-50%) rotate(90deg) translateX(-50%);
+		transform-origin: 0% 50%;
+	}
+
+	@media #{$md} {
+		inset-inline-end: 60px;
+	}
+
+	@media #{$sm,$xs} {
+		display: none;
+	}
+
+	.stroke-text {
+		font-size: 288px;
+
+		@media #{$xl} {
+			font-size: 230px;
+		}
+
+		@media #{$lg} {
+			font-size: 200px;
+		}
+
+		@media #{$md} {
+			font-size: 170px;
+		}
+	}
+}

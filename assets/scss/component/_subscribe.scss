@@ -1,0 +1,145 @@
+/*----------------------------------------
+	16. subscribe css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.subscribe-wrapper {
+	background: var(--clr-common-white);
+	padding: 50px 65px 50px;
+	padding-inline-start: 230px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 30px;
+
+	@media #{$lg,$md,$sm,$xs} {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	@media #{$sm,$xs} {
+		padding: 230px 50px 50px 50px;
+	}
+
+	@media #{$xxs} {
+		padding: 230px 20px 50px 20px;
+	}
+}
+
+.subscribe-icon {
+	position: absolute;
+	width: 165px;
+	height: 100%;
+	background: var(--clr-theme-2);
+	inset-inline-start: 0;
+	top: 0;
+	font-size: 62px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	@media #{$sm,$xs} {
+		height: 165px;
+		width: 100%;
+	}
+}
+
+.subscribe-text {
+	max-width: 400px;
+
+	.subscribe-title {
+		font-size: 36px;
+		line-height: 45px;
+		font-weight: 700;
+		text-transform: uppercase;
+		margin-bottom: 0;
+		color: var(--clr-theme-1);
+	}
+}
+
+.subscribe-form {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+
+	@media #{$xl,$md,$sm,$xs} {
+		flex-direction: column;
+		align-items: flex-start;
+		width: 100%;
+	}
+
+	.single-input-field {
+		margin-bottom: 0;
+
+		@media #{$sm,$xs} {
+			width: 100%;
+		}
+
+		input {
+			width: 600px;
+			background: transparent;
+			border-radius: 0px;
+			color: var(--clr-theme-1);
+			padding-inline-end: 190px;
+
+			@media #{$xl} {
+				width: 460px;
+			}
+
+			@media #{$lg} {
+				width: 550px;
+			}
+
+			@media #{$md} {
+				width: 390px;
+			}
+
+			@media #{$md,$sm,$xs} {
+				width: 100%;
+				padding-inline-end: 20px;
+			}
+		}
+	}
+
+	.subs-btn {
+		position: absolute;
+		inset-inline-end: 0;
+		top: 0;
+
+		@media #{$md,$sm,$xs} {
+			position: static;
+		}
+
+		.fill-btn {
+			height: 55px;
+			text-transform: uppercase;
+			padding: 0 20px;
+
+			&:hover {
+				color: var(--clr-theme-1);
+				background: var(--clr-theme-2);
+				border-color: var(--clr-theme-2);
+			}
+		}
+	}
+}
+
+
+
+.subscribe-shape-wrapper {
+	position: relative;
+}
+
+.subscribe-area {
+	overflow: hidden;
+
+	&-shape-1 {
+		position: absolute;
+		inset-inline-start: 101%;
+		width: 170px;
+		top: 0;
+		opacity: .15;
+	}
+}

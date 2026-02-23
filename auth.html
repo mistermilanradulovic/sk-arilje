@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="no-js" lang="sr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Aktivacija naloga | Streljački klub Arilje</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="assets/css/preloader.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.css">
+    <link rel="stylesheet" href="assets/css/meanmenu.css">
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.css">
+    <link rel="stylesheet" href="assets/css/backToTop.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/nice-select.css">
+    <link rel="stylesheet" href="assets/css/fontAwesome5Pro.css">
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/odometer.css">
+    <link rel="stylesheet" href="assets/css/default.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+        <style>
+        /* Ensure Netlify Identity modal can't be hidden by site styles */
+        .netlify-identity-modal, .netlify-identity-overlay, .netlify-identity-widget {
+            z-index: 2147483647 !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        </style>
+        <script>
+        (function () {
+            try {
+                var h = String(window.location.hash || '');
+                var hl = h.toLowerCase();
+                var hasToken = hl.indexOf('invite_token') !== -1 || hl.indexOf('recovery_token') !== -1 || hl.indexOf('confirmation_token') !== -1;
+                if (hasToken) {
+                    window.__identityOriginalHash = h;
+                    try { window.sessionStorage && window.sessionStorage.setItem('identity_original_hash', h); } catch (e) {}
+                }
+            } catch (e) {}
+        })();
+        </script>
+        <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+    <main>
+        <section class="page-title-area" data-background="assets/img/bg/page-title-bg.jpg">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="page-title-wrapper">
+                            <h1 class="page-title mb-10">Aktivacija naloga</h1>
+                            <p>Otvaramo prozor za prijavu/registraciju. Ako se ništa ne pojavi u roku od nekoliko sekundi, kliknite na dugme ispod.</p>
+                                <a id="open-identity" href="/.netlify/identity/" class="arm-btn mt-20" role="button"><span class="circle-btn"><i class="fal fa-user"></i></span>Otvori prijavu</a>
+                            <p class="mt-20" id="auth-status" style="opacity:.85"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script>
+    (function () {
+        function setStatus(msg) {
+            var el = document.getElementById('auth-status');
+            if (el) el.textContent = msg || '';
+        }
+        function enableOpenButtonContinuous() {
+            var btn = document.getElementById('open-identity');
+            if (!btn) return;
+            function forceEnable() {
+                btn.removeAttribute('disabled');
+                btn.removeAttribute('aria-disabled');
+                btn.classList.remove('disabled');
+                btn.style.pointerEvents = 'auto';
+                btn.style.zIndex = '9999';
+                btn.style.opacity = '';
+            }
+            forceEnable();
+            var tries = 0;
+            var iv = setInterval(function () {
+                forceEnable();
+                if (++tries > 40) clearInterval(iv);
+            }, 100);
+        }
+        function restoreHashIfMissing() {
+            var current = String(window.location.hash || '');
+            var stored = '';
+            try { stored = window.__identityOriginalHash || (window.sessionStorage && window.sessionStorage.getItem('identity_original_hash')) || ''; } catch (e) {}
+            var cl = current.toLowerCase();
+            var sl = String(stored).toLowerCase();
+            var hasTokenNow = cl.indexOf('invite_token') !== -1 || cl.indexOf('recovery_token') !== -1 || cl.indexOf('confirmation_token') !== -1;
+            var hadTokenStored = sl.indexOf('invite_token') !== -1 || sl.indexOf('recovery_token') !== -1 || sl.indexOf('confirmation_token') !== -1;
+            if (!hasTokenNow && hadTokenStored) {
+                try { window.location.hash = stored; } catch (e) {}
+            }
+        }
+        function ensureIdentity(callback) {
+            if (window.netlifyIdentity) {
+                callback && callback();
+                return;
+            }
+            // Inject the widget if it didn’t load for any reason
+            var existing = document.querySelector('script[src*="identity.netlify.com"]');
+            if (!existing) {
+                var s = document.createElement('script');
+                s.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
+                s.async = true;
+                s.onload = function () {
+                    try { window.netlifyIdentity && window.netlifyIdentity.init(); } catch (e) {}
+                    callback && callback();
+                };
+                document.head.appendChild(s);
+                return;
+            }
+            // If script tag exists but global not ready yet, poll briefly
+            var tries = 0;
+            (function waitReady(){
+                if (window.netlifyIdentity || tries++ > 40) {
+                    if (window.netlifyIdentity) { try { window.netlifyIdentity.init(); } catch(e){} }
+                    callback && callback();
+                } else {
+                    setTimeout(waitReady, 100);
+                }
+            })();
+        }
+        function hasAnyIdentityToken() {
+            var h = String(window.location.hash || '').toLowerCase();
+            return h.indexOf('recovery_token') !== -1 || h.indexOf('invite_token') !== -1 || h.indexOf('confirmation_token') !== -1;
+        }
+        function openWidgetForToken() {
+            var h = String(window.location.hash || '').toLowerCase();
+            ensureIdentity(function () {
+                if (!window.netlifyIdentity) {
+                    setStatus('Nije moguće učitati Netlify Identity. Proverite konekciju i pokušajte ponovo.');
+                    return;
+                }
+                restoreHashIfMissing();
+                // Open appropriate flow; widget will detect token in hash
+                if (h.indexOf('invite_token') !== -1) {
+                    window.netlifyIdentity.open('signup');
+                } else if (h.indexOf('recovery_token') !== -1) {
+                    window.netlifyIdentity.open('recovery');
+                } else {
+                    window.netlifyIdentity.open();
+                }
+                if (h.indexOf('invite_token') !== -1) {
+                    setStatus('Otvaramo registraciju po pozivu…');
+                } else if (h.indexOf('confirmation_token') !== -1) {
+                    setStatus('Potvrđujemo vašu prijavu…');
+                } else if (h.indexOf('recovery_token') !== -1) {
+                    setStatus('Potvrđujemo oporavak naloga…');
+                } else {
+                    setStatus('Otvaramo prozor za prijavu…');
+                }
+                // Fallback if modal fails to mount
+                var tries = 0;
+                (function checkModal() {
+                    var modal = document.querySelector('.netlify-identity-modal, .netlify-identity-widget');
+                    if (modal) return;
+                    if (++tries === 10) {
+                        // try reopen once
+                        try { window.netlifyIdentity.open(); } catch (e) {}
+                    }
+                    if (tries > 30) {
+                        setStatus('Otváranje nije uspelo. Preusmeravamo na bezbednu stranicu za prijavu…');
+                        try { window.location.href = '/.netlify/identity/'; } catch (e) {}
+                        return;
+                    }
+                    setTimeout(checkModal, 150);
+                })();
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            // Make sure the button is enabled even if styles/scripts toggle it
+            enableOpenButtonContinuous();
+            window.addEventListener('hashchange', enableOpenButtonContinuous);
+            window.addEventListener('hashchange', restoreHashIfMissing);
+            // Attempt restore immediately before widget init
+            restoreHashIfMissing();
+
+            if (window.netlifyIdentity) {
+                window.netlifyIdentity.on('init', function (user) {
+                    var seen = false;
+                    try { seen = window.sessionStorage && window.sessionStorage.getItem('identity_token_seen') === '1'; } catch (e) {}
+                    if (hasAnyIdentityToken() || seen) {
+                        try { window.sessionStorage && window.sessionStorage.removeItem('identity_token_seen'); } catch (e) {}
+                        restoreHashIfMissing();
+                        openWidgetForToken();
+                        return;
+                    }
+                    if (!user) {
+                        // no token in URL — allow manual login if needed
+                        setStatus('Kliknite na “Otvori prijavu” da se ulogujete ili dovršite registraciju.');
+                    }
+                });
+                window.netlifyIdentity.on('login', function () {
+                    setStatus('Uspešna prijava. Preusmeravamo…');
+                    window.location.href = '/';
+                });
+                window.netlifyIdentity.on('signup', function () {
+                    setStatus('Registracija uspešna. Preusmeravamo…');
+                    window.location.href = '/';
+                });
+                window.netlifyIdentity.on('error', function () {
+                    setStatus('Došlo je do greške. Pokušajte ponovo ili nas kontaktirajte.');
+                });
+                window.netlifyIdentity.init();
+            }
+            var btn = document.getElementById('open-identity');
+            if (btn) {
+                btn.addEventListener('click', function (ev) {
+                    // Try modal first, then fall back to hosted portal
+                    ev.preventDefault();
+                    var fallbackTimer = setTimeout(function () {
+                        try { window.location.href = btn.getAttribute('href') || '/.netlify/identity/'; } catch (e) {}
+                    }, 2000);
+                    ensureIdentity(function () {
+                        restoreHashIfMissing();
+                        if (window.netlifyIdentity) {
+                            try {
+                                var h = String(window.location.hash || '').toLowerCase();
+                                if (h.indexOf('invite_token') !== -1) {
+                                    window.netlifyIdentity.open('signup');
+                                } else if (h.indexOf('recovery_token') !== -1) {
+                                    window.netlifyIdentity.open('recovery');
+                                } else {
+                                    window.netlifyIdentity.open();
+                                }
+                                // If modal mounts, cancel fallback redirect
+                                var tries2 = 0;
+                                (function checkUp(){
+                                    var modal = document.querySelector('.netlify-identity-modal, .netlify-identity-widget');
+                                    if (modal) { clearTimeout(fallbackTimer); return; }
+                                    if (++tries2 > 10) return;
+                                    setTimeout(checkUp, 150);
+                                })();
+                            } catch (e) {
+                                // best-effort fallback
+                            }
+                        }
+                    });
+                });
+            }
+            // If Identity wasn't present at DOM ready, still handle token from sessionStorage
+            (function lateAutoOpen(){
+                var seen = false;
+                try { seen = window.sessionStorage && window.sessionStorage.getItem('identity_token_seen') === '1'; } catch (e) {}
+                if (hasAnyIdentityToken() || seen) {
+                    try { window.sessionStorage && window.sessionStorage.removeItem('identity_token_seen'); } catch (e) {}
+                    restoreHashIfMissing();
+                    openWidgetForToken();
+                }
+            })();
+        });
+    })();
+    </script>
+</body>
+</html>
+

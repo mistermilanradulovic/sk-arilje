@@ -1,0 +1,40 @@
+/*----------------------------------------
+	28. error css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.error-content-wrapper {
+	text-align: center;
+}
+
+.error-img {
+	img {
+		max-width: 700px;
+
+		@media #{$md} {
+			max-width: 550px;
+		}
+
+		@media #{$sm,$xs} {
+			max-width: 100%;
+		}
+	}
+}
+
+.error-btn {
+	margin-top: 115px;
+
+	@media #{$sm,$xs} {
+		margin-top: 65px;
+	}
+
+	.border-btn {
+		width: 290px;
+		text-transform: uppercase;
+
+		@media #{$sm,$xs} {
+			width: inherit;
+		}
+	}
+}

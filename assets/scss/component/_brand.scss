@@ -1,0 +1,27 @@
+/*----------------------------------------
+	15. brand css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.arm-brand {
+    text-align: center;
+
+    &:hover {
+        img {
+            opacity: 1;
+        }
+    }
+
+    img {
+        opacity: .35;
+        @include transition(.3s);
+        margin: 0 auto;
+    }
+}
+
+.arm-brand-wrapper {
+    display: flex;
+    /* align-items: center; */
+    justify-content: space-evenly;
+}

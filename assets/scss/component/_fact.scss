@@ -1,0 +1,89 @@
+/*----------------------------------------
+	18. fact css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.fact-area-bg {
+	background: var(--clr-theme-2);
+	padding-top: 95px;
+	padding-bottom: 60px;
+}
+
+.fact-number {
+	font-size: 130px;
+	font-weight: 700;
+	color: transparent;
+	stroke: 1px var(--clr-theme-1);
+	font-family: "Teko", sans-serif;
+	-webkit-text-fill-color: transparent;
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: var(--clr-theme-1);
+	line-height: 1;
+	position: relative;
+	display: block;
+
+	@media #{$xl,$md,$sm,$xs} {
+		font-size: 110px;
+	}
+
+	@media #{$lg,$xxs} {
+		font-size: 90px;
+	}
+
+	.plus {
+		font-size: 70px;
+	}
+}
+
+.fact-title {
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 24px;
+	font-style: italic;
+	display: block;
+}
+
+.fact-content {
+	text-align: center;
+}
+
+.fact-single {
+	margin-bottom: 45px;
+}
+
+// fact style-2 css
+.fact-style-2 {
+	padding-top: 115px;
+}
+
+.style-2 {
+	.fact-number {
+		&:before {
+			position: absolute;
+			content: url("../img/shape/scratched-shape.png");
+			opacity: 0.25;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			@include transition(0.3s);
+			z-index: -1;
+
+			@media #{$lg,$xxs} {
+				top: 60%;
+			}
+		}
+
+		.plus {
+			font-size: inherit;
+		}
+	}
+
+	&:hover {
+		.fact-number {
+			&:before {
+				opacity: 1;
+			}
+		}
+	}
+}

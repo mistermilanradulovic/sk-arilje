@@ -1,0 +1,92 @@
+/*----------------------------------------
+    33. cursor css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+// cursor style
+body {
+    cursor: none;
+}
+
+.cursor-outer {
+    margin-left: -15px;
+    margin-top: -15px;
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--clr-theme-2);
+    box-sizing: border-box;
+    z-index: 10000000;
+    opacity: 0.5;
+    transition: all 0.08s ease-out;
+    mix-blend-mode: difference;
+
+    &.cursor-hover {
+        opacity: 0;
+    }
+
+    &.cursor-big {
+        opacity: 0;
+    }
+}
+
+.mouseCursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    transform: translateZ(0);
+    visibility: hidden;
+    text-align: center;
+
+    @include rtl {
+        left: 0;
+        right: auto;
+    }
+
+    &.cursor-big {
+        width: 80px;
+        height: 80px;
+        margin-left: -40px;
+        margin-top: -40px;
+    }
+}
+
+.cursor-inner {
+    margin-left: -3px;
+    margin-top: -3px;
+    width: 6px;
+    height: 6px;
+    z-index: 10000001;
+    background-color: var(--clr-theme-2);
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out,
+        margin 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    mix-blend-mode: difference;
+
+    & span {
+        color: #fff;
+        line-height: 80px;
+        opacity: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 12px;
+    }
+
+    &.cursor-big {
+        & span {
+            opacity: 1;
+        }
+    }
+
+    &.cursor-hover {
+        margin-left: -40px;
+        margin-top: -40px;
+        width: 80px;
+        height: 80px;
+        background-color: var(--clr-theme-2);
+        opacity: .3;
+    }
+}

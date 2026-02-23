@@ -1,0 +1,142 @@
+/*----------------------------------------
+	24. enquiry css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.service-enquiry-area {
+	background: var(--clr-theme-1);
+}
+
+.service-enquiry-content {
+	.bd-section-title {
+		color: var(--clr-common-white);
+	}
+
+	p {
+		color: var(--clr-common-white);
+	}
+}
+
+.service-enquiry-form-wrapper {
+	position: relative;
+	margin-inline-start: 120px;
+
+	@media #{$xl,$lg} {
+		margin-inline-start: 30px;
+	}
+
+	@media #{$md,$sm,$xs} {
+		margin-inline-start: 0;
+	}
+}
+
+.enquiry-form-shape {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+
+.enquiry-form-shape .slice-circle {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 138%;
+
+	@media #{$xl,$lg} {
+		width: 124%;
+	}
+}
+
+.service-enquiry-form {
+	padding: 130px 65px;
+	background: var(--clr-common-white);
+	position: relative;
+	z-index: 2;
+
+	@media #{$lg,$sm,$xs} {
+		padding: 65px 40px;
+	}
+
+	@media #{$xxs} {
+		padding: 65px 30px;
+	}
+
+	.field-message {
+		margin-bottom: 30px;
+	}
+}
+
+.single-input-field {
+	margin-bottom: 20px;
+	position: relative;
+
+	input {
+		border-radius: 6px;
+		height: 55px;
+		width: 100%;
+		padding: 0px 20px;
+		padding-inline-start: 47px;
+		background: var(--clr-common-white);
+		color: #535353;
+		border: 1px solid var(--clr-common-border);
+		outline: 0;
+
+		&:focus {
+			border-color: var(--clr-theme-2);
+		}
+	}
+
+	&:before {
+		position: absolute;
+		content: "\f11b";
+		font-family: flaticon_armado_-_militery_service_themeset !important;
+		color: var(--clr-common-placeholder);
+		font-size: 20px;
+		font-weight: 300;
+		top: 14px;
+		inset-inline-start: 16px;
+	}
+
+	textarea {
+		border-radius: 6px;
+		min-height: 100px;
+		width: 100%;
+		padding: 15px 15px;
+		background: var(--clr-common-white);
+		color: #535353;
+		border: 1px solid var(--clr-common-border);
+		resize: none;
+		outline: 0;
+
+		&:focus {
+			border-color: var(--clr-theme-2);
+		}
+	}
+
+	&.field-phone:before {
+		content: "\f138";
+	}
+
+	&.field-email:before {
+		content: "\f146";
+	}
+
+	&.field-subject:before {
+		content: "\f13d";
+	}
+
+	&.field-message:before {
+		display: none;
+	}
+}
+
+.enquiry-btn {
+	.border-btn {
+		height: 64px;
+		width: 100%;
+		border-radius: 6px;
+	}
+}

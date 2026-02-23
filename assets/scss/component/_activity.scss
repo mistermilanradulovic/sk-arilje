@@ -1,0 +1,245 @@
+/*----------------------------------------
+	07. activity css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.activity-content {
+	border: 1px solid #d3d3d3;
+	padding: 30px 30px 25px;
+	position: relative;
+	z-index: 2;
+	text-align: center;
+	background: var(--clr-common-white);
+
+	&:hover {
+		border-color: transparent;
+
+		.activity-bg {
+			opacity: 1;
+		}
+
+		.activity-content-icon {
+			color: var(--clr-common-white);
+		}
+
+		.activity-title {
+			& h3 {
+				color: var(--clr-common-white);
+			}
+		}
+	}
+
+	&-icon {
+		font-size: 80px;
+	}
+
+	& .activity-title {
+		& h3 {
+			margin-top: 22px;
+			margin-bottom: 0;
+		}
+	}
+}
+
+.activity-bg {
+	position: absolute;
+	top: 0;
+	inset-inline-start: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	opacity: 0;
+	@include transition(.5s);
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.activity-shape-1 {
+		width: auto;
+		height: auto;
+		position: absolute;
+		top: 20px;
+		inset-inline-start: 20px;
+		width: 35px;
+		opacity: .5;
+	}
+
+	.activity-shape-2 {
+		width: auto;
+		height: auto;
+		position: absolute;
+		bottom: 20px;
+		inset-inline-end: 20px;
+		width: 35px;
+		opacity: .5;
+	}
+
+	&:before {
+		position: absolute;
+		content: "";
+		width: 100%;
+		height: 100%;
+		top: 0;
+		inset-inline-start: 0;
+		background: var(--clr-common-black);
+		opacity: 0.6;
+		z-index: 1;
+	}
+}
+
+.activity-thumb-main {
+	background-attachment: fixed;
+	background-size: cover;
+
+	img {
+		width: 100%;
+		opacity: 0;
+	}
+}
+
+.activity-area-shape-1 {
+	position: absolute;
+	inset-inline-start: 107%;
+	top: -120px;
+	animation: translateY 10s linear infinite alternate;
+}
+
+.activity-area-shape-2 {
+	position: absolute;
+	bottom: 70px;
+	inset-inline-start: -10%;
+	animation: translateY 10s linear infinite alternate;
+}
+
+.activity-thumb-wrapper {
+	position: relative;
+}
+
+.activity-thumb-shape-1 {
+	position: absolute;
+	inset-inline-end: calc(100% + 30px);
+	top: 0;
+	width: 218px;
+	height: 100%;
+	object-fit: cover;
+
+	@media #{$lg,$md,$sm,$xs} {
+		display: none;
+	}
+}
+
+.activity-thumb-shape-2 {
+	position: absolute;
+	top: 60px;
+	inset-inline-start: 60px;
+	width: 56%;
+
+	svg {
+		width: 100%;
+		height: auto;
+	}
+}
+
+.activity-content-wrapper {
+	padding-inline-start: 43px;
+
+	@media #{$lg,$md,$sm,$xs} {
+		padding-inline-start: 0;
+	}
+}
+
+.activity-feature-box {
+	background: var(--clr-common-white);
+	box-shadow: 0px 4px 60px 10px rgba(31, 73, 65, 0.08);
+	padding: 30px 40px 30px 45px;
+	position: relative;
+	display: flex;
+	gap: 100px;
+	align-items: center;
+	margin: 40px 0;
+
+	@media #{$xxs} {
+		padding: 30px 20px 30px 25px;
+	}
+
+	&:before {
+		position: absolute;
+		content: "";
+		width: 5px;
+		height: 100%;
+		background: var(--clr-theme-2);
+		inset-inline-start: 0;
+		top: 0;
+	}
+}
+
+.activity-feature-icon {
+	width: 160px;
+	min-width: 160px;
+
+	@media #{$xl,$sm,$xs} {
+		display: none;
+	}
+
+	img {
+		width: 100%;
+	}
+}
+
+.activity-feature-list {
+	position: relative;
+
+	&:before {
+		position: absolute;
+		content: "";
+		width: 1px;
+		height: 100%;
+		background: var(--clr-common-border);
+		inset-inline-start: -48px;
+		top: 0;
+
+		@media #{$xl,$sm,$xs} {
+			display: none;
+		}
+	}
+
+	.list-icon {
+		width: 36px;
+		height: 36px;
+		background: #FFF9EA;
+		display: inline-flex;
+		border-radius: 50%;
+		justify-content: center;
+		align-items: center;
+		font-size: 20px;
+		color: var(--clr-theme-2);
+		min-width: 36px;
+	}
+
+	ul {
+		li {
+			display: flex;
+			gap: 15px;
+		}
+
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+	}
+}
+
+.activity-inner {
+	position: relative;
+}
+
+.activity-inner-shape-1 {
+	position: absolute;
+	width: 268px;
+	inset-inline-start: 93%;
+	top: 69%;
+	animation: translateY 10s linear infinite alternate;
+}

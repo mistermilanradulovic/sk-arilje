@@ -1,0 +1,387 @@
+/*----------------------------------------
+	11. donation css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.donation-overlay-img {
+	z-index: -1;
+	background-position: right center;
+	background-repeat: no-repeat;
+	background-size: cover;
+
+
+
+	&:after {
+		background: linear-gradient(98.21deg,
+				var(--clr-common-black) 0.23%,
+				rgba(34, 34, 34, 0.818402) 45.35%,
+				rgba(34, 34, 34, 0.624675) 55.26%,
+				rgba(34, 34, 34, 0) 100%);
+		position: absolute;
+		content: "";
+		top: 0;
+		inset-inline-start: 0;
+		width: 100%;
+		height: 100%;
+
+		@include rtl {
+			background: linear-gradient(-98.21deg,
+					var(--clr-common-black) 0.23%,
+					rgba(34, 34, 34, 0.818402) 45.35%,
+					rgba(34, 34, 34, 0.624675) 55.26%,
+					rgba(34, 34, 34, 0) 100%);
+		}
+	}
+}
+
+.dontaion-content-wrapper {
+	.bd-section-title {
+		color: var(--clr-common-white);
+	}
+
+	p {
+		color: var(--clr-common-white);
+	}
+}
+
+.donation-content {
+	.donation-2 {
+		font-weight: 600;
+	}
+}
+
+.donation-btn {
+	.arm-btn {
+		color: var(--clr-common-white);
+
+		&:hover {
+			color: var(--clr-theme-2);
+		}
+	}
+
+	.circle-btn {
+		font-size: 22px;
+		color: var(--clr-theme-2);
+		border-color: var(--clr-theme-2);
+	}
+}
+
+
+
+
+.donation-style {
+	position: relative;
+	z-index: 2;
+
+}
+
+.donation-shape {
+	position: absolute;
+
+	&.shape-1 {
+		width: 68px;
+		inset-inline-start: 107%;
+		bottom: -34px;
+		animation: translateY 10s linear infinite alternate;
+	}
+
+	&.shape-2 {
+		inset-inline-start: 84%;
+		top: -60px;
+		width: 36px;
+		@include animate(rotate, 8s, linear, infinite);
+	}
+}
+
+// donation thumb donation-thumb-with-bg
+.donation-thumb-with-bg {
+	&.donation-thumb-wrapper {
+		padding-top: 150px;
+
+		@media #{$md,$sm,$xs} {
+			padding-top: 70px;
+		}
+	}
+
+	.donation-thumb {
+		position: relative;
+		z-index: 2;
+		max-width: 670px;
+	}
+
+
+	.donation-thumb-main {
+		width: 100%;
+	}
+
+	.donation-thumb-bg {
+		position: absolute;
+		z-index: -1;
+		top: 0;
+		inset-inline-end: 70px;
+		width: 900px;
+		height: 86%;
+		object-fit: cover;
+	}
+
+	.donation-thumb-shape-1 {
+		position: absolute;
+		width: 102px;
+		top: 28%;
+		inset-inline-start: -51px;
+	}
+}
+
+// donation-fund style start
+.donation-fund {
+	margin-top: 40px;
+	margin-bottom: 40px;
+
+	.bd-skill--title {
+		font-size: 16px;
+		font-weight: 600;
+		font-family: "Poppins", sans-serif;
+		text-transform: uppercase;
+		display: flex;
+		align-items: center;
+		column-gap: 10px;
+		margin-bottom: 15px;
+	}
+
+	.fund-total {
+		font-size: 26px;
+		font-weight: 600;
+		color: #979797;
+		font-family: "Teko", sans-serif;
+	}
+
+	.fund-raised {
+		font-size: 26px;
+		font-weight: 600;
+		color: var(--clr-theme-1);
+		font-family: "Teko", sans-serif;
+	}
+
+	.progress {
+		background: #ffecbf;
+		border-radius: 0;
+		height: 5px;
+	}
+
+	.progress-bar {
+		background-color: var(--clr-theme-2);
+
+		@include rtl {
+			animation-name: slideInRight;
+		}
+	}
+}
+
+// donation-fund style end
+
+// donation form area style
+
+.donation-form-area {
+	background: #efefef;
+	position: relative;
+	z-index: 2;
+	overflow-x: clip;
+}
+
+.donation-area-shape-1 {
+	position: absolute;
+	inset-inline-start: -255px;
+	bottom: -70px;
+	z-index: -1;
+}
+
+.donation-area-shape-2 {
+	position: absolute;
+	opacity: 0.25;
+	z-index: -1;
+	top: -60px;
+	inset-inline-start: calc(100% + 90px);
+	width: 288px;
+}
+
+.donation-icon-price {
+	display: flex;
+
+	.donation-price {
+		font-size: 26px;
+		font-weight: 600;
+		width: 140px;
+		height: 90px;
+		background: var(--clr-common-white);
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.donation-icon {
+		font-size: 54px;
+		color: var(--clr-theme-1);
+		width: 100px;
+		height: 90px;
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		background: var(--clr-theme-2);
+	}
+}
+
+.donation-price-wrapper {
+	margin-top: 60px;
+
+	@media #{$md,$sm,$xs} {
+		margin-top: 0;
+	}
+}
+
+.donation-price-select {
+	display: flex;
+	gap: 15px 30px;
+	flex-wrap: wrap;
+	margin-top: 60px;
+}
+
+// donation form style start
+.donation-form {
+	background: var(--clr-common-white);
+	padding: 65px 80px;
+
+	@media #{$lg,$md,$sm,$xs} {
+		padding: 65px 40px;
+	}
+
+	@media #{$xxs} {
+		padding: 40px 20px;
+	}
+
+	.single-input-field input {
+		border-radius: 0;
+		padding-inline-end: 50px;
+		color: var(--clr-theme-1);
+
+		@media #{$xxs} {
+			padding-inline-end: 20px;
+		}
+	}
+
+	.field-donation-price {
+		&.single-input-field input {
+			text-align: right;
+			font-size: 16px;
+			font-weight: 600;
+			padding-inline-start: 220px;
+
+			@media #{$xxs} {
+				padding-inline-start: 160px;
+			}
+		}
+
+		&.single-input-field::before {
+			display: none;
+		}
+
+		.field-tag {
+			font-size: 16px;
+			font-weight: 600;
+			text-transform: uppercase;
+			background: #d9d9d9;
+			position: absolute;
+			height: calc(100% - 2px);
+			top: 1px;
+			inset-inline-start: 1px;
+			padding: 0 25px;
+			display: inline-flex;
+			align-items: center;
+		}
+	}
+
+	.donation-form-btn {
+		margin-top: 20px;
+	}
+
+	.fill-btn {
+		width: 100%;
+		height: 55px;
+		background: var(--clr-theme-2);
+		border-color: var(--clr-theme-2);
+		color: var(--clr-theme-1);
+
+		&:hover,
+		&:focus {
+			background: var(--clr-theme-1);
+			border-color: var(--clr-theme-1);
+			color: var(--clr-common-white);
+		}
+	}
+}
+
+// donation form style end
+
+// single price select style start
+.single-price-select {
+	display: block;
+	position: relative;
+	padding-inline-start: 35px;
+	margin-bottom: 0px;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: 600;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.single-price-select input {
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.checkmark {
+	position: absolute;
+	top: 0;
+	inset-inline-start: 0;
+	height: 25px;
+	width: 25px;
+	background-color: var(--clr-common-white);
+	border-radius: 50%;
+}
+
+.single-price-select:hover input~.checkmark {
+	background-color: var(--clr-common-white);
+}
+
+.single-price-select input:checked~.checkmark {
+	background-color: var(--clr-common-white);
+}
+
+.checkmark:after {
+	content: "";
+	position: absolute;
+	display: none;
+}
+
+.single-price-select input:checked~.checkmark:after {
+	display: block;
+}
+
+.single-price-select input:hover~.checkmark:after {
+	display: block;
+}
+
+.single-price-select .checkmark:after {
+	top: 6px;
+	inset-inline-start: 6px;
+	width: 13px;
+	height: 13px;
+	border-radius: 50%;
+	background: var(--clr-theme-2);
+}
+
+// single price select style end

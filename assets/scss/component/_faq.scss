@@ -1,0 +1,159 @@
+/*----------------------------------------
+	27. faq css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+// tab nav css
+.faq-tab-nav {
+	.nav-tabs {
+		border: 0;
+		display: flex;
+		gap: 15px 55px;
+		justify-content: center;
+
+		@media #{$sm,$xs} {
+			gap: 15px 35px;
+		}
+
+		.nav-link {
+			margin-bottom: 0;
+			border: 0;
+			border-radius: 0;
+			padding: 0;
+			line-height: 1;
+			font-size: 16px;
+			font-weight: 600;
+			color: var(--clr-theme-1);
+		}
+
+		.nav-link.active {
+			color: var(--clr-theme-2);
+		}
+	}
+}
+
+.arm-faq.arm-faq-2column .accordion {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 30px;
+}
+
+.arm-faq.arm-faq-2column .accordion>div {
+	width: calc((100% - 30px) / 2);
+
+	@media #{$md,$sm,$xs} {
+		width: calc((100% - 0px) / 1);
+	}
+}
+
+
+
+.accordion-2 {
+	.accordion-item {
+		background: #e9e9e9;
+		border-radius: 0;
+	}
+
+	.accordion-button {
+		color: var(--clr-theme-1);
+		background: #e9e9e9;
+		box-shadow: none;
+	}
+
+	.accordion-button::after {
+		color: var(--clr-theme-1);
+	}
+
+	.accordion-button:not(.collapsed) {
+		color: var(--clr-theme-2);
+	}
+
+	.accordion-button:not(.collapsed)::after {
+		color: var(--clr-theme-2);
+	}
+}
+
+
+
+// question-thumb-meta style
+
+
+.question-thumb-meta {
+	.meta-title {
+		font-size: 26px;
+		font-weight: 400;
+		text-transform: uppercase;
+		margin-bottom: 15px;
+	}
+
+	.meta-number {
+		font-size: 65px;
+		font-weight: 400;
+		color: var(--clr-theme-2);
+		font-family: "Teko", sans-serif;
+		line-height: 1;
+	}
+
+	text-align: center;
+	position: relative;
+	padding: 28px 0;
+
+	&:after {
+		position: absolute;
+		content: "";
+		width: 100%;
+		height: 1px;
+		background: var(--clr-common-border);
+		inset-inline-start: 0;
+		bottom: 0;
+	}
+}
+
+.question-thumb-meta-box {
+	background: var(--clr-common-white);
+	padding: 24px 24px;
+	box-shadow: 0px 4px 140px 49px rgba(31, 73, 65, 0.1);
+	margin-top: -114px;
+	margin-inline-start: 30px;
+
+	@media #{$xs} {
+		margin-inline-start: 20px;
+		margin-inline-end: 20px;
+	}
+
+	&::before,
+	&:after {
+		position: absolute;
+		content: "";
+		width: 32px;
+		height: 32px;
+		background: var(--clr-theme-2);
+	}
+
+	&::before {
+		top: 10px;
+		inset-inline-start: 10px;
+		clip-path: polygon(0 0, 100% 0, 0 100%);
+	}
+
+	&::after {
+		inset-inline-end: 10px;
+		bottom: 10px;
+		clip-path: polygon(100% 0, 100% 100%, 0 100%);
+	}
+
+	.question-thumb-meta {
+		&:last-child {
+			&:after {
+				display: none;
+			}
+		}
+	}
+}
+
+.question-thumb-wrapper {
+	img {
+		width: 100%;
+	}
+}

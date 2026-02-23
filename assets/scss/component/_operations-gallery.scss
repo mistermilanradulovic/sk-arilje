@@ -1,0 +1,85 @@
+/*----------------------------------------
+	31. operations-gallery css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.operations-area {
+	overflow-x: clip;
+}
+
+.operation-title .bd-section-subtitle span {
+	color: var(--clr-theme-1);
+}
+
+.operation-gallery-thumb {
+	overflow: hidden;
+
+	a {
+		position: relative;
+		display: block;
+
+		img {
+			width: 100%;
+		}
+
+		&:before {
+			position: absolute;
+			content: "";
+			width: 100%;
+			height: 100%;
+			top: 0;
+			inset-inline-start: 0;
+			background: var(--clr-theme-1);
+			opacity: 0;
+		}
+
+		.plus-icon {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			color: var(--clr-common-white);
+			font-size: 36px;
+			opacity: 0;
+		}
+
+		&:hover {
+			&:before {
+				opacity: 0.8;
+			}
+
+			.plus-icon {
+				opacity: 1;
+			}
+		}
+	}
+}
+
+.operation-gallery-slider {
+	overflow: visible;
+}
+
+.operation-gallery-slider .swiper-wrapper {
+	align-items: center;
+
+	.swiper-slide:nth-child(2n) {
+		.operation-gallery-thumb {
+			width: 100%;
+
+			a {
+				width: 100%;
+
+				img {
+					width: 100%;
+					height: 350px;
+					object-fit: cover;
+
+					@media #{$xl,$md} {
+						height: 280px;
+					}
+				}
+			}
+		}
+	}
+}

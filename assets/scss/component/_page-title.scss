@@ -1,0 +1,132 @@
+/*----------------------------------------
+	17. page-title css
+----------------------------------------*/
+
+@use "../abstract" as *;
+
+.page-title-area {
+	display: flex;
+	align-items: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center top;
+	position: relative;
+	z-index: 2;
+	padding: 235px 0 125px;
+
+	&::before {
+		position: absolute;
+		content: "";
+		width: 100%;
+		height: 100%;
+		background: var(--clr-common-black);
+		opacity: 0.7;
+		top: 0;
+		inset-inline-start: 0;
+		z-index: -1;
+	}
+}
+
+.page-title-wrapper p {
+	font-weight: 700;
+	color: var(--clr-common-white);
+	text-transform: uppercase;
+	margin-bottom: 3px;
+}
+
+.page-title {
+	font-size: 65px;
+	font-weight: 700;
+	line-height: 1.1;
+	text-transform: uppercase;
+	color: var(--clr-common-white);
+	margin-bottom: 6px;
+	text-align: center;
+
+	@media #{$lg,$xl} {
+		font-size: 60px;
+	}
+
+	@media #{$md} {
+		font-size: 52px;
+	}
+
+	@media #{$sm} {
+		font-size: 46px;
+	}
+
+	@media #{$xs} {
+		font-size: 40px;
+		text-align: start;
+	}
+
+}
+
+.breadcrumb-menu {
+	li {
+		position: relative;
+
+		span {
+			font-size: 16px;
+			font-weight: 500;
+			color: var(--clr-theme-2);
+			text-transform: uppercase;
+		}
+
+		&:first-child span {
+			color: var(--clr-common-white);
+		}
+
+		&:not(:last-child) {
+			&:after {
+				display: inline-block;
+				color: var(--clr-common-white);
+				content: "";
+				position: absolute;
+				inset-inline-end: -18px;
+				top: -1px;
+				font-family: "Font Awesome 5 Pro";
+				font-size: 18px;
+
+				@include rtl {
+					transform: rotateY(180deg);
+				}
+			}
+		}
+	}
+
+	ul {
+		display: flex;
+		justify-content: center;
+		gap: 5px 24px;
+		flex-wrap: wrap;
+
+		@media #{$xs} {
+			justify-content: flex-start;
+		}
+	}
+}
+
+.page-title-shape {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	inset-inline-start: 0;
+
+	.shape-cube {
+		position: absolute;
+		inset-inline-end: 70px;
+		bottom: 34px;
+		opacity: 0.25;
+		width: 126px;
+
+		@media #{$md,$sm} {
+			width: 70px;
+		}
+
+		@media #{$xs} {
+			width: 50px;
+		}
+	}
+}
