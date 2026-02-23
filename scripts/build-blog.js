@@ -102,34 +102,7 @@ function renderHead({ title, description }) {
       color: #fff;
       border-color: var(--clr-theme-2);
     }
-    .blog-active-filters {
-      display: none;
-      margin: 0 0 10px 0;
-    }
-    .blog-active-filters .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 8px 8px 0;
-      padding: 6px 10px;
-      background: rgba(0,0,0,.06);
-      border-radius: 2px;
-      font-size: 14px;
-    }
-    .blog-active-filters .badge .remove {
-      color: inherit;
-      opacity: .85;
-      cursor: pointer;
-    }
-    .blog-filter-reset {
-      margin-top: 8px;
-    }
-    .blog-filter-reset .reset-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-    }
+    /* Removed active filters summary UI */
     /* Compact heading variant for blog index */
     .page-title-area.page-title--compact {
       padding-top: 60px !important;
@@ -356,14 +329,6 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
                 </div>
               </div>
             </div>
-            <div class="blog-sidebar-widget mb-20">
-              <div id="blog-active" class="blog-active-filters">
-                <!-- populated dynamically with selected filters -->
-              </div>
-              <div class="blog-filter-reset">
-                <a href="#" id="blog-clear-filters" class="reset-link" style="display:none;"><i class="fal fa-times-circle"></i> Prikaži sve</a>
-              </div>
-            </div>
             ${categories.length ? `
             <div class="blog-sidebar-widget mb-30">
               <h4 class="sidebar-widget-title">Kategorije</h4>
@@ -415,8 +380,6 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
   var cards = Array.prototype.slice.call(document.querySelectorAll('.blog-card'));
   var catList = document.getElementById('blog-categories');
   var tagList = document.getElementById('blog-tags');
-  var activeBox = document.getElementById('blog-active');
-  var clearBtn = document.getElementById('blog-clear-filters');
   var state = { q: '', categories: [], tags: [] };
   function matches(card) {
     var t = (card.getAttribute('data-title')||'');
@@ -439,23 +402,6 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
     }
     return true;
   }
-  function renderActive() {
-    if (!activeBox) return;
-    var parts = [];
-    (state.categories||[]).forEach(function(c){
-      parts.push('<span class="badge" data-kind="category" data-val="'+escapeHtml(c)+'">'+escapeHtml(c)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
-    });
-    (state.tags||[]).forEach(function(t){
-      parts.push('<span class="badge" data-kind="tag" data-val="'+escapeHtml(t)+'">'+escapeHtml(t)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
-    });
-    if (state.q) {
-      parts.push('<span class="badge" data-kind="q" data-val="'+escapeHtml(state.q)+'">'+escapeHtml(state.q)+' <i class="fal fa-times remove" title="Ukloni" aria-label="Ukloni"></i></span>');
-    }
-    activeBox.innerHTML = parts.join(' ');
-    activeBox.style.display = parts.length ? 'block' : 'none';
-    if (clearBtn) clearBtn.style.display = parts.length ? 'inline-flex' : 'none';
-  }
-  function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
   function apply() {
     var anyVisible = false;
     cards.forEach(function(card){
@@ -463,7 +409,6 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
       card.style.display = ok ? '' : 'none';
       if (ok) anyVisible = true;
     });
-    renderActive();
   }
   if (qEl) {
     qEl.addEventListener('input', function(){
@@ -498,45 +443,6 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
         var v = (el.getAttribute('data-tag')||'').toLowerCase();
         el.classList.toggle('active', state.tags.indexOf(v) !== -1);
       });
-      apply();
-    });
-  }
-  if (activeBox) {
-    activeBox.addEventListener('click', function(e){
-      var rm = e.target.closest('.remove');
-      if (!rm) return;
-      var badge = e.target.closest('.badge');
-      if (!badge) return;
-      var kind = badge.getAttribute('data-kind');
-      var val = (badge.getAttribute('data-val')||'').toLowerCase();
-      if (kind === 'category') {
-        var i = state.categories.indexOf(val);
-        if (i !== -1) state.categories.splice(i,1);
-        if (catList) Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){
-          if ((el.getAttribute('data-category')||'').toLowerCase() === val) el.classList.remove('active');
-        });
-      } else if (kind === 'tag') {
-        var j = state.tags.indexOf(val);
-        if (j !== -1) state.tags.splice(j,1);
-        if (tagList) Array.prototype.forEach.call(tagList.querySelectorAll('a'), function(el){
-          if ((el.getAttribute('data-tag')||'').toLowerCase() === val) el.classList.remove('active');
-        });
-      } else if (kind === 'q') {
-        state.q = '';
-        if (qEl) qEl.value = '';
-      }
-      apply();
-    });
-  }
-  if (clearBtn) {
-    clearBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      state.q = '';
-      state.categories = [];
-      state.tags = [];
-      if (qEl) qEl.value = '';
-      if (catList) Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){ el.classList.remove('active'); });
-      if (tagList) Array.prototype.forEach.call(tagList.querySelectorAll('a'), function(el){ el.classList.remove('active'); });
       apply();
     });
   }
