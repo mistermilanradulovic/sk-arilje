@@ -684,6 +684,25 @@ ${renderAsides()}
       load();
     });
   }
+  // Fetch aggregates for category counts and tags
+  (function loadAggregates(){
+    var u = new URL('/.netlify/functions/blog', window.location.origin);
+    u.searchParams.set('aggregate','1');
+    fetch(u.toString()).then(function(r){return r.json();}).then(function(data){
+      if (data && data.categories && catList) {
+        var names = Object.keys(data.categories).sort(function(a,b){ return a.localeCompare(b); });
+        var html = names.map(function(name){
+          return '<li><a href="#" data-category="'+escapeHtml(name)+'">'+escapeHtml(name)+' (<span class="category-items">'+(data.categories[name]||0)+'</span>)</a></li>';
+        }).join('');
+        var ul = document.getElementById('blog-categories');
+        if (ul) ul.innerHTML = html;
+      }
+      if (data && data.tags && tagList && tagList.children.length === 0) {
+        var tnames = Object.keys(data.tags).sort(function(a,b){ return a.localeCompare(b); });
+        tagList.innerHTML = tnames.map(function(t){ return '<a href="#" class="blog-tag" data-tag="'+escapeHtml(t)+'">'+escapeHtml(t)+'</a>'; }).join(' ');
+      }
+    }).catch(function(){});
+  })();
   // initial paint
   attachPager();
   load();
@@ -693,7 +712,7 @@ ${renderFooter()}
 `;
 }
 
-function renderPost(post) {
+function renderPost(post, prev, next, related) {
   const dateStr = post.date ? format(new Date(post.date), 'dd.MM.yyyy') : '';
   const img = post.heroContent || post.heroImage || '/assets/img/blog/blog-default.jpg';
   const headerBg = post.heroFull || post.heroImage || '/assets/img/bg/page-title-bg.jpg';
@@ -728,6 +747,33 @@ ${renderAsides()}
             <div class="blog-details-content">
               ${post.htmlBody}
             </div>
+            <div class="blog-share mb-30">
+              <div class="share-icon"><i class="flaticon-119-share"></i></div>
+              <div class="social-links blog-social">
+                <ul>
+                  <li><a href="#" class="share-btn" data-net="facebook" aria-label="Podeli na Facebook"><i class="fab fa-facebook"></i></a></li>
+                  <li><a href="#" class="share-btn" data-net="twitter" aria-label="Podeli na X"><i class="fab fa-twitter"></i></a></li>
+                  <li><a href="#" class="share-btn" data-net="linkedin" aria-label="Podeli na LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-20 mb-10">
+              ${prev ? `<a class="arm-btn" href="/blog/${prev.slug}/"><span class="circle-btn"><i class="fal fa-long-arrow-left"></i></span>Prethodna</a>` : '<span></span>'}
+              ${next ? `<a class="arm-btn" href="/blog/${next.slug}/">Sledeća<span class="circle-btn"><i class="fal fa-long-arrow-right"></i></span></a>` : '<span></span>'}
+            </div>
+            ${related && related.length ? `
+            <div class="mt-30">
+              <h4 class="mb-15">Možda će vam se svideti</h4>
+              <div class="row">
+                ${related.slice(0,3).map(r => `
+                <div class="col-md-4 mb-20">
+                  <article class="tp-post tp-post-grid">
+                    <div class="tp-post-thumb p-relative fix"><a href="/blog/${r.slug}/"><img src="${r.heroThumb || r.heroImage || '/assets/img/blog/blog-default.jpg'}" alt="${htmlEscape(r.title)}" loading="lazy"></a></div>
+                    <div class="tp-post-content"><h4 class="tp-post-title" style="font-size:16px;"><a href="/blog/${r.slug}/">${htmlEscape(r.title)}</a></h4></div>
+                  </article>
+                </div>`).join('')}
+              </div>
+            </div>` : ''}
           </div>
         </div>
       </div>
@@ -736,6 +782,19 @@ ${renderAsides()}
 </main>
 <script>
 (function(){
+  // Share handlers
+  function openShare(net){
+    var u = encodeURIComponent(window.location.href);
+    var t = encodeURIComponent(document.title || '');
+    var share = '';
+    if (net === 'facebook') share = 'https://www.facebook.com/sharer/sharer.php?u='+u;
+    if (net === 'twitter') share = 'https://twitter.com/intent/tweet?url='+u+'&text='+t;
+    if (net === 'linkedin') share = 'https://www.linkedin.com/sharing/share-offsite/?url='+u;
+    if (share) window.open(share, '_blank', 'noopener,noreferrer,width=700,height=500');
+  }
+  document.querySelectorAll('.share-btn').forEach(function(a){
+    a.addEventListener('click', function(e){ e.preventDefault(); openShare(a.getAttribute('data-net')); });
+  });
   function markActiveBlog() {
     try {
       var candidates = document.querySelectorAll('#mobile-menu a, .mobile-menu a');
@@ -884,10 +943,14 @@ async function main() {
   fs.writeFileSync(path.join(BLOG_DIR, 'index.html'), indexHtml, 'utf8');
 
   // Write posts
-  for (const p of posts) {
+  for (let i = 0; i < posts.length; i++) {
+    const p = posts[i];
+    const prev = posts[i + 1] || null;
+    const next = posts[i - 1] || null;
+    const related = posts.filter(x => x.slug !== p.slug).slice(0, 3);
     const postDir = path.join(BLOG_DIR, p.slug);
     ensureDir(postDir);
-    const html = renderPost(p);
+    const html = renderPost(p, prev, next, related);
     fs.writeFileSync(path.join(postDir, 'index.html'), html, 'utf8');
   }
 

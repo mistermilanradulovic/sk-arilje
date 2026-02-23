@@ -25,12 +25,17 @@ exports.handler = async (event) => {
     const pageSize = Math.min(24, Math.max(1, parseInt((event.queryStringParameters && event.queryStringParameters.pageSize) || '6', 10) || 6));
     const categories = (event.queryStringParameters && event.queryStringParameters.categories) ? String(event.queryStringParameters.categories) : '';
     const tags = (event.queryStringParameters && event.queryStringParameters.tags) ? String(event.queryStringParameters.tags) : '';
+    const aggregate = (event.queryStringParameters && event.queryStringParameters.aggregate) ? (String(event.queryStringParameters.aggregate).toLowerCase() === '1' || String(event.queryStringParameters.aggregate).toLowerCase() === 'true') : false;
     params.set('content_type', 'blogPost');
     // Order newest first by explicit date, then by creation time as a secondary key
     params.set('order', '-fields.date,-sys.createdAt');
-    params.set('limit', String(pageSize));
-    params.set('skip', String((page - 1) * pageSize));
-    params.set('include', '2');
+    if (aggregate) {
+      // compute category/tag counts across many entries
+    } else {
+      params.set('limit', String(pageSize));
+      params.set('skip', String((page - 1) * pageSize));
+      params.set('include', '2');
+    }
     if (q) params.set('query', q);
     if (categories) {
       // match simple text categories
@@ -46,6 +51,51 @@ exports.handler = async (event) => {
       params.append('fields.tag[in]', tags);
       // system tags
       params.append('metadata.tags.sys.id[in]', tags);
+    }
+    if (aggregate) {
+      async function fetchBatch(skip, limit) {
+        const u = new URL(url.toString());
+        const p = u.searchParams;
+        p.set('select', 'fields.categories,fields.category,metadata.tags');
+        p.set('limit', String(limit));
+        p.set('skip', String(skip));
+        const r = await fetch(u.toString(), {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/vnd.contentful.delivery.v1+json',
+            'Accept': 'application/json'
+          }
+        });
+        if (!r.ok) {
+          const txt = await r.text();
+          return { statusCode: r.status, headers, body: JSON.stringify({ error: 'Upstream error', detail: txt }) };
+        }
+        return r.json();
+      }
+      let total = 0;
+      let skip = 0;
+      const limit = 500;
+      const catCounts = {};
+      const tagCounts = {};
+      const normArr = v => Array.isArray(v) ? v : (typeof v === 'string' ? v.split(',').map(s=>s.trim()).filter(Boolean) : (v ? [v] : []));
+      const label = v => (typeof v === 'string') ? v : (v && v.fields && (v.fields.title || v.fields.name)) ? (v.fields.title || v.fields.name) : (v && v.sys && v.sys.id) ? v.sys.id : '';
+      do {
+        const data = await fetchBatch(skip, limit);
+        if (data.statusCode) return data; // error bubbled
+        total = data.total || 0;
+        (data.items || []).forEach(item => {
+          const f = item.fields || {};
+          normArr(f.categories).forEach(v => { const l = label(v); if (l) catCounts[l] = (catCounts[l]||0)+1; });
+          if (f.category) { const l = label(f.category); if (l) catCounts[l] = (catCounts[l]||0)+1; }
+          normArr(f.tags).forEach(v => { const l = label(v); if (l) tagCounts[l] = (tagCounts[l]||0)+1; });
+          if (f.tag) { const l = label(f.tag); if (l) tagCounts[l] = (tagCounts[l]||0)+1; }
+          if (item.metadata && Array.isArray(item.metadata.tags)) {
+            item.metadata.tags.forEach(t => { if (t && t.sys && t.sys.id) tagCounts[t.sys.id] = (tagCounts[t.sys.id]||0)+1; });
+          }
+        });
+        skip += limit;
+      } while (skip < total);
+      return { statusCode: 200, headers, body: JSON.stringify({ categories: catCounts, tags: tagCounts, total }) };
     }
     const resp = await fetch(url.toString(), {
       headers: {
