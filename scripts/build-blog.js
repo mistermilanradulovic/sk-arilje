@@ -218,11 +218,28 @@ function renderFooter() {
 }
 
 function renderIndex(posts) {
+  // Derive categories and tags from posts (optional fields)
+  const allCategories = new Set();
+  const allTags = new Set();
+  posts.forEach(p => {
+    (p.categories || []).forEach(c => allCategories.add(String(c)));
+    (p.tags || []).forEach(t => allTags.add(String(t)));
+  });
+  const categories = Array.from(allCategories).sort((a, b) => a.localeCompare(b));
+  const tags = Array.from(allTags).sort((a, b) => a.localeCompare(b));
+  const recent = posts.slice(0, Math.min(5, posts.length));
+
   const items = posts.map(p => {
     const dateStr = p.date ? format(new Date(p.date), 'dd.MM.yyyy') : '';
     const img = p.heroThumb || p.heroImage || '/assets/img/blog/blog-default.jpg';
     const desc = sanitizeHtml(p.description || '', { allowedTags: [], allowedAttributes: {} });
-    return `<div class="col-xl-4 col-lg-4 col-md-6 mb-30">
+    const dataCats = (p.categories || []).join(',').toLowerCase();
+    const dataTags = (p.tags || []).join(',').toLowerCase();
+    return `<div class="col-xl-6 col-lg-6 col-md-12 mb-30 blog-card"
+        data-title="${htmlEscape(p.title).toLowerCase()}"
+        data-desc="${htmlEscape(desc).toLowerCase()}"
+        data-categories="${htmlEscape(dataCats)}"
+        data-tags="${htmlEscape(dataTags)}">
       <article class="tp-post tp-post-grid">
         <div class="tp-post-thumb p-relative fix">
           <a href="/blog/${p.slug}/"><img src="${img}" alt="${htmlEscape(p.title)}" loading="lazy" decoding="async"></a>
@@ -256,12 +273,135 @@ ${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije 
   </section>
   <section class="blog-area pt-80 pb-80">
     <div class="container">
-      <div class="row">
-        ${items || '<p>Trenutno nema objava.</p>'}
+      <div class="row wow fadeInUp" data-wow-delay=".2s">
+        <div class="col-lg-8">
+          <div class="row">
+            ${items || '<p>Trenutno nema objava.</p>'}
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="sidebar-widget-wrapper mb-60">
+            <div class="blog-sidebar-widget mb-30">
+              <h4 class="sidebar-widget-title">Pretraga</h4>
+              <div class="sidebar-search">
+                <div class="search-input-field sidebar-search">
+                  <input id="blog-search" type="text" placeholder="Pretraži objave…">
+                  <button type="button"><i class="far fa-search"></i></button>
+                </div>
+              </div>
+            </div>
+            ${categories.length ? `
+            <div class="blog-sidebar-widget mb-30">
+              <h4 class="sidebar-widget-title">Kategorije</h4>
+              <div class="category-list sidebar-category">
+                <ul id="blog-categories">
+                  ${categories.map(c => `<li><a href="#" data-category="${htmlEscape(c)}">${htmlEscape(c)}</a></li>`).join('')}
+                </ul>
+              </div>
+            </div>` : ''}
+            <div class="blog-sidebar-widget mb-30">
+              <h4 class="sidebar-widget-title">Skorašnje objave</h4>
+              <div class="sidebar-blog-list">
+                ${recent.map(r => `
+                  <div class="sidebar-blog">
+                    <div class="blog-thumb">
+                      <a href="/blog/${r.slug}/">
+                        <img src="${r.heroThumb || r.heroImage || '/assets/img/blog/blog-default.jpg'}" alt="${htmlEscape(r.title)}" loading="lazy">
+                      </a>
+                    </div>
+                    <div class="blog-content">
+                      <h4 class="blog-title"><a href="/blog/${r.slug}/">${htmlEscape(r.title)}</a></h4>
+                      <div class="meta-list">
+                        <div class="meta-item">
+                          <div class="meta-icon"><i class="flaticon-048-calendar"></i></div>
+                          <div class="meta-text">${r.date ? format(new Date(r.date), 'dd.MM.yyyy') : ''}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            ${tags.length ? `
+            <div class="blog-sidebar-widget mb-30">
+              <h4 class="sidebar-widget-title">Oznake</h4>
+              <div class="sidebar-blog-tags" id="blog-tags">
+                ${tags.map(t => `<a href="#" class="blog-tag" data-tag="${htmlEscape(t)}">${htmlEscape(t)}</a>`).join(' ')}
+              </div>
+            </div>` : ''}
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </main>
+<script>
+(function(){
+  var qEl = document.getElementById('blog-search');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.blog-card'));
+  var catList = document.getElementById('blog-categories');
+  var tagList = document.getElementById('blog-tags');
+  var state = { q: '', category: '', tag: '' };
+  function matches(card) {
+    var t = (card.getAttribute('data-title')||'');
+    var d = (card.getAttribute('data-desc')||'');
+    var cats = (card.getAttribute('data-categories')||'');
+    var tags = (card.getAttribute('data-tags')||'');
+    if (state.q) {
+      var m = t.indexOf(state.q) !== -1 || d.indexOf(state.q) !== -1;
+      if (!m) return false;
+    }
+    if (state.category) {
+      if (cats.split(',').indexOf(state.category) === -1) return false;
+    }
+    if (state.tag) {
+      if (tags.split(',').indexOf(state.tag) === -1) return false;
+    }
+    return true;
+  }
+  function apply() {
+    var anyVisible = false;
+    cards.forEach(function(card){
+      var ok = matches(card);
+      card.style.display = ok ? '' : 'none';
+      if (ok) anyVisible = true;
+    });
+    // Optionally could show "no results" message
+  }
+  if (qEl) {
+    qEl.addEventListener('input', function(){
+      state.q = (qEl.value||'').toLowerCase().trim();
+      apply();
+    });
+  }
+  if (catList) {
+    catList.addEventListener('click', function(e){
+      var a = e.target.closest('a[data-category]');
+      if (!a) return;
+      e.preventDefault();
+      var sel = (a.getAttribute('data-category')||'').toLowerCase();
+      state.category = (state.category === sel) ? '' : sel;
+      Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){
+        el.classList.toggle('active', (el.getAttribute('data-category')||'').toLowerCase() === state.category && !!state.category);
+      });
+      apply();
+    });
+  }
+  if (tagList) {
+    tagList.addEventListener('click', function(e){
+      var a = e.target.closest('a[data-tag]');
+      if (!a) return;
+      e.preventDefault();
+      var sel = (a.getAttribute('data-tag')||'').toLowerCase();
+      state.tag = (state.tag === sel) ? '' : sel;
+      Array.prototype.forEach.call(tagList.querySelectorAll('a'), function(el){
+        el.classList.toggle('active', (el.getAttribute('data-tag')||'').toLowerCase() === state.tag && !!state.tag);
+      });
+      apply();
+    });
+  }
+})();
+</script>
 ${renderFooter()}
 `;
 }
@@ -352,6 +492,9 @@ async function fetchPosts() {
       heroFull = buildImageUrl(raw, 'w=1920&fm=webp&q=82');
     }
     const body = f.body || '';
+    // Optional taxonomy
+    const categories = Array.isArray(f.categories) ? f.categories : (f.category ? [ f.category ] : []);
+    const tags = Array.isArray(f.tags) ? f.tags : [];
     let htmlBody = '';
     if (body && body.nodeType) {
       // Rich text
@@ -376,6 +519,8 @@ async function fetchPosts() {
       heroThumb,
       heroContent,
       heroFull,
+      categories,
+      tags,
       htmlBody
     };
   });
