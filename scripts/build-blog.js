@@ -82,6 +82,25 @@ function renderHead({ title, description }) {
     .blog-details-content ol ul {
       margin-left: 1rem;
     }
+    /* Blog index: inline meta (date + comments) */
+    .tp-post-content .meta-list {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .tp-post-content .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tp-post-content .meta-item .meta-icon { line-height: 1; }
+    .tp-post-content .meta-item a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: inherit;
+    }
     /* Comments: keep list reasonably sized with scrolling */
     #comment-list {
       max-height: 480px;
