@@ -1251,7 +1251,7 @@
         <!-- cta-area-end -->
 
         <!-- latest-news-area-start -->
-        <section class="latest-news-are pt-70 pb-100 p-relative bg-white z-index-2">
+        <section id="latest-news-section" class="latest-news-are pt-70 pb-100 p-relative bg-white z-index-2">
 
             <!-- line animation - start -->
             <div class="deco_wrap">
@@ -1282,68 +1282,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xl-12">
-                        <div class="single-news wow fadeInUp" data-wow-delay=".3s">
-                            <div class="row align-items-center">
-                                <div class="col-xl-6">
-                                    <div class="latest-news-thumb mb-30">
-                                        <a href="javascript:void(0)" aria-disabled="true" tabindex="-1"><img src="assets/img/news/vladimirci.jpg"
-                                                                         alt="Takmičenje u Vladimircima – diplome i medalje"></a>
-                                        <div class="panel wow"></div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="news-box mb-30">
-                                        <div class="news-box-date">
-                                            <div class="news-box-inner">
-                                                <h3>24.</h3>
-                                                <span>JAN 2026.</span>
-                                            </div>
-                                        </div>
-                                        <div class="news-box-content">
-                                            <h4 class=""><a href="javascript:void(0)" aria-disabled="true" tabindex="-1">Takmičenje u Vladimircima</a></h4>
-                                            <p class="">U Vladimircima, 24.1.2026. godine, SK Sava Mesarci je bio domaćin trećeg kola Lige Streljačkog saveza Zapadne Srbije. Naša mlada pištoljašica Hana Mladenović je osvojila drugo mesto u kategoriji vazdušni pištolj, kadeti. Hvala domaćinima na gostoprimstvu i dobroj organizaciji takmičenja.</p>
-                                            <div class="blog-btn mt-40">
-                                                <a href="javascript:void(0)" aria-disabled="true" tabindex="-1" class="arm-btn"><span class="circle-btn"><i
-                                                        class="fal fa-long-arrow-right"></i></span>Pročitajte više</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="single-news wow fadeInUp" data-wow-delay=".3s">
-                            <div class="row align-items-center">
-                                <div class="col-xl-6 order-xl-2">
-                                    <div class="latest-news-thumb mb-30">
-                                        <a href="javascript:void(0)" aria-disabled="true" tabindex="-1"><img src="assets/img/news/bajina-basta.jpg"
-                                                                         alt="Drugo kolo u Bajinoj Bašti – diploma i medalja"></a>
-                                        <div class="panel wow"></div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 order-xl-1">
-                                    <div class="news-box mb-30">
-                                        <div class="news-box-date">
-                                            <div class="news-box-inner">
-                                                <h3>06.</h3>
-                                                <span>DEC 2025.</span>
-                                            </div>
-                                        </div>
-                                        <div class="news-box-content">
-                                            <h4 class=""><a href="javascript:void(0)" aria-disabled="true" tabindex="-1">Drugo kolo Lige mladih strelaca Zapadne Srbije</a></h4>
-                                            <p class="">Drugo kolo Lige mladih strelaca Zapadne Srbije održano je u Bajinoj Bašti 6.12.2025. Naša takmičarka Hana Mladenović osvojila je treće mesto u kategoriji vazdušni pištolj – kadetkinje. U kategoriji vazdušna puška, pioniri, naše takmičarke Milica Janković, Emilija Radojević i Emilija Nedeljković, na prvom nastupu su završile u zlatnoj sredini.</p>
-                                            <div class="blog-btn mt-40">
-                                                <a href="javascript:void(0)" aria-disabled="true" tabindex="-1" class="arm-btn"><span class="circle-btn"><i
-                                                        class="fal fa-long-arrow-right"></i></span>Pročitajte više</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="latest-news-container" class="row"></div>
             </div>
         </section>
         <!-- latest-news-area-end -->
@@ -1717,6 +1656,50 @@
     <script src="assets/js/main.js"></script>
     <script>
     (function () {
+        // Latest news section (dynamic)
+        (function(){
+            function fmtDateParts(iso){
+                try {
+                    var d=new Date(iso);
+                    var day=('0'+d.getDate()).slice(-2);
+                    var month=d.toLocaleDateString('sr-Latn-RS',{month:'short'}).toUpperCase()+'.';
+                    var year=d.getFullYear()+'.';
+                    return { day: day, month: month, year: year };
+                } catch(e){ return { day:'',month:'',year:''}; }
+            }
+            function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+            function newsItem(item, reversed){
+                var parts = fmtDateParts(item.date);
+                var img = item.heroContent || item.heroThumb || item.heroImage || '/assets/img/blog/blog-default.jpg';
+                var href = '/blog/'+esc(item.slug)+'/';
+                // structure mirrors existing layout
+                var imageCol = '<div class="col-xl-6'+(reversed?' order-xl-2':'')+'"><div class="latest-news-thumb mb-30"><a href="'+href+'"><img src="'+img+'" alt="'+esc(item.title)+'" loading="lazy"></a><div class="panel wow"></div></div></div>';
+                var textCol = '<div class="col-xl-6'+(reversed?' order-xl-1':'')+'"><div class="news-box mb-30"><div class="news-box-date"><div class="news-box-inner"><h3>'+parts.day+'</h3><span>'+parts.month+' '+parts.year+'</span></div></div><div class="news-box-content"><h4 class=""><a href="'+href+'">'+esc(item.title)+'</a></h4><p class="">'+esc(item.description||'')+'</p><div class="blog-btn mt-40"><a href="'+href+'" class="arm-btn"><span class="circle-btn"><i class="fal fa-long-arrow-right"></i></span>Pročitajte više</a></div></div></div></div>';
+                return '<div class="col-xl-12"><div class="single-news wow fadeInUp" data-wow-delay=".15s"><div class="row align-items-center">'+ (reversed ? (imageCol+textCol) : (imageCol+textCol)) +'</div></div></div>';
+            }
+            function renderLatest(items){
+                var sec = document.getElementById('latest-news-section');
+                var cont = document.getElementById('latest-news-container');
+                if (!sec || !cont) return;
+                if (!items || !items.length) {
+                    // hide entire section if no posts
+                    sec.style.display = 'none';
+                    return;
+                }
+                var html = '';
+                if (items[0]) html += newsItem(items[0], false);
+                if (items[1]) html += newsItem(items[1], true);
+                cont.innerHTML = html;
+            }
+            function loadLatest(){
+                fetch('/.netlify/functions/blog?page=1&pageSize=2')
+                  .then(function(r){return r.json();})
+                  .then(function(d){ renderLatest(d.items||[]); })
+                  .catch(function(){ renderLatest([]); });
+            }
+            if (document.readyState === 'complete' || document.readyState === 'interactive') loadLatest();
+            else document.addEventListener('DOMContentLoaded', loadLatest);
+        })();
         function fmtDate(iso) {
             try {
                 var d = new Date(iso);
