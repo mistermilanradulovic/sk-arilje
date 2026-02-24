@@ -79,17 +79,39 @@ exports.handler = async (event) => {
       let skip = 0;
       const limit = 500;
       const catCounts = {};
+      const catNameToIds = {}; // name -> Set(ids)
       const tagCounts = {};
       const normArr = v => Array.isArray(v) ? v : (typeof v === 'string' ? v.split(',').map(s=>s.trim()).filter(Boolean) : (v ? [v] : []));
       const label = v => (typeof v === 'string') ? v : (v && v.fields && (v.fields.title || v.fields.name)) ? (v.fields.title || v.fields.name) : (v && v.sys && v.sys.id) ? v.sys.id : '';
+      const linkId = v => (v && v.sys && v.sys.id) ? v.sys.id : '';
       do {
         const data = await fetchBatch(skip, limit);
         if (data.statusCode) return data; // error bubbled
         total = data.total || 0;
         (data.items || []).forEach(item => {
           const f = item.fields || {};
-          normArr(f.categories).forEach(v => { const l = label(v); if (l) catCounts[l] = (catCounts[l]||0)+1; });
-          if (f.category) { const l = label(f.category); if (l) catCounts[l] = (catCounts[l]||0)+1; }
+          normArr(f.categories).forEach(v => {
+            const l = label(v);
+            if (l) {
+              catCounts[l] = (catCounts[l]||0)+1;
+              const id = linkId(v);
+              if (id) {
+                if (!catNameToIds[l]) catNameToIds[l] = new Set();
+                catNameToIds[l].add(id);
+              }
+            }
+          });
+          if (f.category) {
+            const l = label(f.category);
+            if (l) {
+              catCounts[l] = (catCounts[l]||0)+1;
+              const id = linkId(f.category);
+              if (id) {
+                if (!catNameToIds[l]) catNameToIds[l] = new Set();
+                catNameToIds[l].add(id);
+              }
+            }
+          }
           normArr(f.tags).forEach(v => { const l = label(v); if (l) tagCounts[l] = (tagCounts[l]||0)+1; });
           if (f.tag) { const l = label(f.tag); if (l) tagCounts[l] = (tagCounts[l]||0)+1; }
           if (item.metadata && Array.isArray(item.metadata.tags)) {
@@ -98,7 +120,12 @@ exports.handler = async (event) => {
         });
         skip += limit;
       } while (skip < total);
-      return { statusCode: 200, headers, body: JSON.stringify({ categories: catCounts, tags: tagCounts, total }) };
+      const categoriesDetailed = Object.keys(catCounts).sort((a,b)=>a.localeCompare(b)).map(name => ({
+        name,
+        count: catCounts[name] || 0,
+        ids: Array.from(catNameToIds[name] || [])
+      }));
+      return { statusCode: 200, headers, body: JSON.stringify({ categories: catCounts, categoriesDetailed, tags: tagCounts, total }) };
     }
     const resp = await fetch(url.toString(), {
       headers: {

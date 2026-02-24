@@ -645,7 +645,11 @@ ${renderAsides()}
     u.searchParams.set('page', String(state.page));
     u.searchParams.set('pageSize', String(state.pageSize));
     if (state.q) u.searchParams.set('q', state.q);
-    if (state.categories && state.categories.length) u.searchParams.set('categories', state.categories.join(','));
+    if (state.categoryIds && state.categoryIds.length) {
+      u.searchParams.set('categoryIds', state.categoryIds.join(','));
+    } else if (state.categories && state.categories.length) {
+      u.searchParams.set('categories', state.categories.join(','));
+    }
     if (state.tags && state.tags.length) u.searchParams.set('tags', state.tags.join(','));
     return u.toString();
   }
@@ -674,6 +678,16 @@ ${renderAsides()}
       var sel = (a.getAttribute('data-category')||'');
       var idx = state.categories.map(function(v){return v.toLowerCase();}).indexOf(sel.toLowerCase());
       if (idx === -1) state.categories.push(sel); else state.categories.splice(idx, 1);
+      // maintain categoryIds union from selected anchors (if present)
+      var selectedIds = [];
+      (state.categories||[]).forEach(function(name){
+        var el = catList.querySelector('a[data-category="'+CSS.escape(name)+'"]');
+        if (el && el.getAttribute('data-idlist')) {
+          selectedIds = selectedIds.concat(el.getAttribute('data-idlist').split(',').filter(Boolean));
+        }
+      });
+      // de-duplicate ids
+      state.categoryIds = Array.from(new Set(selectedIds));
       Array.prototype.forEach.call(catList.querySelectorAll('a'), function(el){
         var v = (el.getAttribute('data-category')||'');
         el.classList.toggle('active', state.categories.map(function(x){return x.toLowerCase();}).indexOf(v.toLowerCase()) !== -1);
@@ -703,11 +717,20 @@ ${renderAsides()}
     var u = new URL('/.netlify/functions/blog', window.location.origin);
     u.searchParams.set('aggregate','1');
     fetch(u.toString()).then(function(r){return r.json();}).then(function(data){
-      if (data && data.categories && catList) {
-        var names = Object.keys(data.categories).sort(function(a,b){ return a.localeCompare(b); });
-        var html = names.map(function(name){
-          return '<li><a href="#" data-category="'+escapeHtml(name)+'">'+escapeHtml(name)+' (<span class="category-items">'+(data.categories[name]||0)+'</span>)</a></li>';
-        }).join('');
+      if (data && (data.categoriesDetailed || data.categories) && catList) {
+        var items = [];
+        if (Array.isArray(data.categoriesDetailed) && data.categoriesDetailed.length) {
+          items = data.categoriesDetailed.map(function(it){
+            var ids = (it.ids||[]).join(',');
+            return '<li><a href="#" data-category="'+escapeHtml(it.name)+'" data-idlist="'+escapeHtml(ids)+'">'+escapeHtml(it.name)+' (<span class="category-items">'+(it.count||0)+'</span>)</a></li>';
+          });
+        } else if (data.categories) {
+          var names = Object.keys(data.categories).sort(function(a,b){ return a.localeCompare(b); });
+          items = names.map(function(name){
+            return '<li><a href="#" data-category="'+escapeHtml(name)+'">'+escapeHtml(name)+' (<span class="category-items">'+(data.categories[name]||0)+'</span>)</a></li>';
+          });
+        }
+        var html = items.join('');
         var ul = document.getElementById('blog-categories');
         if (ul) ul.innerHTML = html;
       }
