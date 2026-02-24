@@ -45,6 +45,9 @@ exports.handler = async (event) => {
       if (event.queryStringParameters && event.queryStringParameters.categoryIds) {
         params.append('fields.categories.sys.id[in]', String(event.queryStringParameters.categoryIds));
       }
+      // Try matching referenced Category entry titles as well
+      params.append('fields.categories.fields.title[in]', categories);
+      params.append('fields.category.fields.title[in]', categories);
     }
     if (tags) {
       params.append('fields.tags[in]', tags);
