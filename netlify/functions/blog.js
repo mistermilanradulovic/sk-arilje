@@ -129,8 +129,46 @@ exports.handler = async (event) => {
       }));
       return { statusCode: 200, headers, body: JSON.stringify({ categories: catCounts, categoriesDetailed, tags: tagCounts, total }) };
     }
+    // Helper to resolve category names to entry IDs (for referenced Category content type)
+    async function resolveCategoryIdsByNames(namesCsv) {
+      const names = String(namesCsv || '').split(',').map(s => s.trim()).filter(Boolean);
+      if (!names.length) return [];
+      const u = new URL(`https://cdn.contentful.com/spaces/${space}/environments/${environment}/entries`);
+      const p = u.searchParams;
+      p.set('content_type', 'category');
+      // attempt match by title in any locale
+      p.set('fields.title[in]', names.join(','));
+      p.set('locale', '*');
+      p.set('limit', '1000');
+      const r = await fetch(u.toString(), {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+      if (!r.ok) return [];
+      const data = await r.json();
+      const out = [];
+      (data.items || []).forEach(it => {
+        if (it && it.sys && it.sys.id) out.push(it.sys.id);
+      });
+      return out;
+    }
+
+    let effectiveCategoryIds = categoryIds.slice();
+    if (!effectiveCategoryIds.length && categories) {
+      try {
+        const resolved = await resolveCategoryIdsByNames(categories);
+        if (resolved && resolved.length) {
+          effectiveCategoryIds = resolved;
+        }
+      } catch (e) {
+        // ignore resolution errors; will fall back to name-based filtering below
+      }
+    }
+
     // If we have referenced category IDs, fetch union via multiple requests and merge
-    if (categoryIds.length > 0) {
+    if (effectiveCategoryIds.length > 0) {
       // Build from base to avoid inherited limit/skip interfering with union fetches
       function baseUrl() {
         const u = new URL(`https://cdn.contentful.com/spaces/${space}/environments/${environment}/entries`);
@@ -168,7 +206,7 @@ exports.handler = async (event) => {
       }
       const allItemsMap = new Map();
       const includesAssets = {};
-      for (const id of categoryIds) {
+      for (const id of effectiveCategoryIds) {
         try {
           const data = await fetchForLink(id);
           if (data.includes && Array.isArray(data.includes.Asset)) {
