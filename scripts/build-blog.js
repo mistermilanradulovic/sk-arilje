@@ -11,6 +11,7 @@ const contentful = require('contentful');
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_DIR = path.join(ROOT, 'blog');
 const DISQUS_SHORTNAME = process.env.DISQUS_SHORTNAME || '';
+const SITE_URL = process.env.SITE_URL || 'https://www.sk-arilje.rs';
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -34,7 +35,7 @@ function htmlEscape(s) {
     .replace(/'/g, '&#039;');
 }
 
-function renderHead({ title, description }) {
+function renderHead({ title, description, url, image }) {
   return `<!DOCTYPE html>
 <html class="no-js" lang="sr-RS">
 <head>
@@ -44,6 +45,19 @@ function renderHead({ title, description }) {
   <meta name="description" content="${htmlEscape(description || '')}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" type="image/x-icon" href="/assets/img/favicon.png">
+  ${url ? `<link rel="canonical" href="${htmlEscape(url)}">` : ''}
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  ${url ? `<meta property="og:url" content="${htmlEscape(url)}">` : ''}
+  <meta property="og:site_name" content="Streljački klub Arilje">
+  <meta property="og:title" content="${htmlEscape(title)}">
+  <meta property="og:description" content="${htmlEscape(description || '')}">
+  ${image ? `<meta property="og:image" content="${htmlEscape(image)}">` : ''}
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${htmlEscape(title)}">
+  <meta name="twitter:description" content="${htmlEscape(description || '')}">
+  ${image ? `<meta name="twitter:image" content="${htmlEscape(image)}">` : ''}
   <link rel="stylesheet" href="/assets/css/preloader.css">
   <link rel="stylesheet" href="/assets/css/bootstrap.css">
   <link rel="stylesheet" href="/assets/css/meanmenu.css">
@@ -515,8 +529,10 @@ function renderIndex(posts) {
     </div>`;
   }).join('\n');
 
+  const pageUrl = SITE_URL.replace(/\/+$/,'') + '/blog/';
+  const defaultImage = SITE_URL.replace(/\/+$/,'') + '/assets/img/bg/page-title-bg.jpg';
   return `
-${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije vesti i objave' })}
+${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije vesti i objave', url: pageUrl, image: defaultImage })}
 ${renderAsides()}
 <main>
   <section class="page-title-area page-title--compact" data-background="/assets/img/bg/page-title-bg.jpg">
@@ -880,8 +896,10 @@ function renderPost(post, prev, next, related) {
   const dateStr = post.date ? format(new Date(post.date), 'dd.MM.yyyy') : '';
   const img = post.heroContent || post.heroImage || '/assets/img/blog/blog-default.jpg';
   const headerBg = post.heroFull || post.heroImage || '/assets/img/bg/page-title-bg.jpg';
+  const absUrl = SITE_URL.replace(/\/+$/,'') + '/blog/' + encodeURIComponent(post.slug) + '/';
+  const absImage = (post.heroFull || post.heroImage) ? (post.heroFull || post.heroImage) : (SITE_URL.replace(/\/+$/,'') + img);
   return `
-${renderHead({ title: `${post.title} | Streljački klub Arilje`, description: post.description || '' })}
+${renderHead({ title: `${post.title} | Streljački klub Arilje`, description: post.description || '', url: absUrl, image: absImage })}
 ${renderAsides()}
 <main>
   <section class="page-title-area page-title--compact" data-background="${headerBg}">
@@ -958,6 +976,51 @@ ${renderAsides()}
     </div>
   </section>
 </main>
+<script type="application/ld+json">
+${JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": post.title,
+  "url": "${absUrl}".replace(/"/g,'\\"'),
+  "image": absImage,
+  "datePublished": post.date || undefined,
+  "dateModified": post.date || undefined,
+  "description": post.description || undefined,
+  "author": { "@type": "Organization", "name": "Streljački klub Arilje" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Streljački klub Arilje",
+    "logo": { "@type": "ImageObject", "url": SITE_URL.replace(/\/+$/,'') + "/assets/img/favicon.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "${absUrl}".replace(/"/g,'\\"') }
+}, null, 2)}
+</script>
+<script type="application/ld+json">
+${JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Početna",
+      "item": SITE_URL.replace(/\/+$/,'') + "/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": SITE_URL.replace(/\/+$/,'') + "/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": post.title,
+      "item": absUrl
+    }
+  ]
+}, null, 2)}
+</script>
 <script>
 (function(){
   // Share handlers
@@ -1240,6 +1303,26 @@ async function main() {
     ensureDir(postDir);
     const html = renderPost(p, prev, next, scored);
     fs.writeFileSync(path.join(postDir, 'index.html'), html, 'utf8');
+  }
+
+  // Generate blog sitemap.xml
+  try {
+    const base = SITE_URL.replace(/\/+$/,'');
+    const urls = [];
+    urls.push({ loc: `${base}/blog/`, lastmod: new Date().toISOString() });
+    sorted.forEach(p => {
+      const lastmod = p.date ? new Date(p.date).toISOString() : new Date().toISOString();
+      urls.push({ loc: `${base}/blog/${encodeURIComponent(p.slug)}/`, lastmod });
+    });
+    const xml = [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ].concat(
+      urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod></url>`)
+    ).concat(['</urlset>', '']).join('\n');
+    fs.writeFileSync(path.join(BLOG_DIR, 'sitemap.xml'), xml, 'utf8');
+  } catch (e) {
+    console.warn('[build-blog] Could not write blog sitemap.xml', e && e.message);
   }
 
   console.log(`[build-blog] Generated ${posts.length} posts.`);
