@@ -50,6 +50,7 @@
             color: var(--clr-common-white); border-radius: 2px; font-weight: 600;
             background: transparent; cursor: pointer; transition: all .2s ease;
         }
+        .location-tabs .tab:focus { outline: none; box-shadow: none; }
         .location-tabs .tab.active { background: var(--clr-theme-2); border-color: var(--clr-theme-2); color: #fff; }
         .location-pane { display: none; }
         .location-pane.active { display: block; }
@@ -663,7 +664,11 @@
             });
         }
         tabs.forEach(function(btn){
-            btn.addEventListener('click', function(){ activate(btn.getAttribute('data-target')); });
+            btn.addEventListener('click', function(){
+                activate(btn.getAttribute('data-target'));
+                // remove persistent focus ring on click
+                btn.blur();
+            });
         });
     })();
     </script>
