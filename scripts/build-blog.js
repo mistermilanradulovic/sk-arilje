@@ -678,7 +678,7 @@ ${renderAsides()}
               '<div class="meta-item">'+
                 '<a href="/blog/'+item.slug+'/#comments">'+
                   '<div class="meta-icon"><i class="flaticon-055-speech-bubble"></i></div>'+
-                  '<div class="meta-text"><span class="comment-count" data-slug="'+escapeHtml(item.slug)+'">0</span> komentara</div>'+
+                  '<div class="meta-text"><span class="comment-count" data-slug="'+escapeHtml(item.slug)+'">0</span> <span class="comment-label">komentara</span></div>'+
                 '</a>'+
               '</div>'+
             '</div>'+
@@ -757,6 +757,10 @@ ${renderAsides()}
         .then(function(d){
           var n = (d && Array.isArray(d.items)) ? d.items.length : 0;
           span.textContent = String(n);
+          // Serbian pluralization: 1 komentar, all other numbers -> komentara
+          var label = (n % 10 === 1 && n % 100 !== 11) ? 'komentar' : 'komentara';
+          var labEl = span.parentElement && span.parentElement.querySelector('.comment-label');
+          if (labEl) labEl.textContent = label;
         })
         .catch(function(){
           // leave default 0 on error
