@@ -644,7 +644,20 @@ ${renderAsides()}
           '<a href="/blog/'+item.slug+'/"><img src="'+img+'" alt="'+escapeHtml(safeTitle)+'" loading="lazy" decoding="async"></a>'+
         '</div>'+
         '<div class="tp-post-content">'+
-          '<div class="tp-post-meta"><span><i class="fal fa-calendar-alt"></i> '+(dateTxt||'')+'</span></div>'+
+          '<div class="tp-post-meta">'+
+            '<div class="meta-list">'+
+              '<div class="meta-item">'+
+                '<div class="meta-icon"><i class="flaticon-048-calendar"></i></div>'+
+                '<div class="meta-text">'+(dateTxt||'')+'</div>'+
+              '</div>'+
+              '<div class="meta-item">'+
+                '<a href="/blog/'+item.slug+'/#comments">'+
+                  '<div class="meta-icon"><i class="flaticon-055-speech-bubble"></i></div>'+
+                  '<div class="meta-text"><span class="comment-count" data-slug="'+escapeHtml(item.slug)+'">0</span> komentara</div>'+
+                '</a>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
           '<h3 class="tp-post-title"><a href="/blog/'+item.slug+'/">'+escapeHtml(safeTitle)+'</a></h3>'+
           '<p>'+escapeHtml(safeDesc)+'</p>'+
           '<div class="tp-post-btn"><a class="arm-btn" href="/blog/'+item.slug+'/"><span class="circle-btn"><i class="fal fa-long-arrow-right"></i></span>Pročitajte više</a></div>'+
@@ -691,6 +704,8 @@ ${renderAsides()}
     var slice = list.slice(start, start + state.pageSize);
     renderGrid(slice);
     renderPagination(state.total, state.page);
+    // Update comment counts for visible cards
+    updateCommentCounts();
   }
   function loadAllIfNeeded(){
     if (allItems) { applyFilters(); return; }
@@ -706,6 +721,22 @@ ${renderAsides()}
       });
       applyFilters();
     }).catch(function(){ renderGrid([]); });
+  }
+  function updateCommentCounts(){
+    var nodes = grid.querySelectorAll('.comment-count[data-slug]');
+    nodes.forEach(function(span){
+      var slug = span.getAttribute('data-slug') || '';
+      if (!slug) return;
+      fetch('/.netlify/functions/comments?slug='+encodeURIComponent(slug))
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var n = (d && Array.isArray(d.items)) ? d.items.length : 0;
+          span.textContent = String(n);
+        })
+        .catch(function(){
+          // leave default 0 on error
+        });
+    });
   }
   function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
 
