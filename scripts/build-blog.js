@@ -103,6 +103,10 @@ function renderHead({ title, description }) {
       gap: 8px;
       color: inherit;
     }
+    /* Add a bit more space before the title on cards */
+    .tp-post-content .tp-post-title {
+      margin-top: 12px;
+    }
     /* Comments: keep list reasonably sized with scrolling */
     #comment-list {
       max-height: 480px;
