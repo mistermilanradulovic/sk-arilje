@@ -69,12 +69,12 @@ function renderHead({ title, description }) {
     /* Rich text lists inside posts */
     .blog-details-content ul,
     .blog-details-content ol {
-      margin: 0 0 1rem 1.25rem;
-      padding: 0;
-      list-style-position: outside;
+      margin: 0 0 1rem 0;
+      padding-left: 1.25rem;
+      list-style-position: outside !important;
     }
-    .blog-details-content ul { list-style-type: disc; }
-    .blog-details-content ol { list-style-type: decimal; }
+    .blog-details-content ul { list-style: disc !important; }
+    .blog-details-content ol { list-style: decimal !important; }
     .blog-details-content li { margin: 0.25rem 0; }
     .blog-details-content ul ul,
     .blog-details-content ol ol,
@@ -867,6 +867,48 @@ ${renderAsides()}
   document.querySelectorAll('.share-btn').forEach(function(a){
     a.addEventListener('click', function(e){ e.preventDefault(); openShare(a.getAttribute('data-net')); });
   });
+  // Auto-link phone numbers in post content
+  (function linkifyPhones(){
+    var root = document.querySelector('.blog-details-content');
+    if (!root) return;
+    var phoneRe = /(\+?\d[\d\s\/\-]{6,}\d)/g; // simple, robust pattern
+    function normalizeTel(txt){
+      var hasPlus = txt.trim().charAt(0) === '+';
+      var digits = txt.replace(/[^\d]/g,'');
+      return (hasPlus ? '+' : '') + digits;
+    }
+    function processNode(node){
+      if (node.nodeType === Node.TEXT_NODE) {
+        var text = node.nodeValue;
+        if (!phoneRe.test(text)) return;
+        phoneRe.lastIndex = 0;
+        var frag = document.createDocumentFragment();
+        var lastIndex = 0, m;
+        while ((m = phoneRe.exec(text)) !== null) {
+          var before = text.slice(lastIndex, m.index);
+          if (before) frag.appendChild(document.createTextNode(before));
+          var telText = m[1];
+          var a = document.createElement('a');
+          a.href = 'tel:' + normalizeTel(telText);
+          a.textContent = telText.trim();
+          a.setAttribute('aria-label','Pozovi '+telText.trim());
+          frag.appendChild(a);
+          lastIndex = phoneRe.lastIndex;
+        }
+        var after = text.slice(lastIndex);
+        if (after) frag.appendChild(document.createTextNode(after));
+        node.parentNode.replaceChild(frag, node);
+      } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'A') {
+        var child = node.firstChild;
+        while (child) {
+          var next = child.nextSibling;
+          processNode(child);
+          child = next;
+        }
+      }
+    }
+    processNode(root);
+  })();
   // Contentful-native comments
   var slug = ${JSON.stringify(post.slug)};
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
