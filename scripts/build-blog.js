@@ -87,7 +87,9 @@ function renderHead({ title, description }) {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 20px;
+      justify-content: flex-end;
+      text-align: right;
     }
     .tp-post-content .meta-item {
       display: inline-flex;
