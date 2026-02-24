@@ -66,6 +66,22 @@ function renderHead({ title, description }) {
       background-size: cover !important;
       background-repeat: no-repeat !important;
     }
+    /* Rich text lists inside posts */
+    .blog-details-content ul,
+    .blog-details-content ol {
+      margin: 0 0 1rem 1.25rem;
+      padding: 0;
+      list-style-position: outside;
+    }
+    .blog-details-content ul { list-style-type: disc; }
+    .blog-details-content ol { list-style-type: decimal; }
+    .blog-details-content li { margin: 0.25rem 0; }
+    .blog-details-content ul ul,
+    .blog-details-content ol ol,
+    .blog-details-content ul ol,
+    .blog-details-content ol ul {
+      margin-left: 1rem;
+    }
     /* Comments: keep list reasonably sized with scrolling */
     #comment-list {
       max-height: 480px;
@@ -1016,7 +1032,7 @@ async function fetchPosts() {
     } else if (typeof body === 'string') {
       // Markdown or HTML string – allow basic HTML
       htmlBody = sanitizeHtml(body, {
-        allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img', 'h1', 'h2', 'h3', 'figure', 'figcaption' ]),
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img', 'h1', 'h2', 'h3', 'figure', 'figcaption', 'ul', 'ol', 'li', 'br' ]),
         allowedAttributes: {
           a: [ 'href', 'name', 'target', 'rel' ],
           img: [ 'src', 'srcset', 'alt', 'title', 'width', 'height' ]
