@@ -43,7 +43,7 @@
             }
         }
         /* Footer location tabs */
-        .location-tabs { display: inline-flex; gap: 8px; margin-bottom: 12px; }
+        .location-tabs { display: inline-flex; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; row-gap: 10px; }
         .location-tabs .tab {
             display: inline-flex; align-items: center; justify-content: center;
             padding: 6px 10px; border: 1px solid rgba(255,255,255,.15);
@@ -54,7 +54,7 @@
         .location-pane { display: none; }
         .location-pane.active { display: block; }
         .location-pane iframe { width: 100%; height: 220px; border: 0; }
-        .location-address { margin-top: 10px; opacity: .9; }
+        .location-address { margin-top: 10px; opacity: .95; color: var(--clr-theme-2); font-weight: 600; }
         @media (max-width: 575.98px) {
             .location-pane iframe { height: 200px; }
         }
@@ -521,15 +521,15 @@
                     <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12">
                         <div class="footer-widget footer1-widget footer1-widget4 mb-40 ">
                             <div class="footer-widget-title">
-                                <h4 style="color: var(--clr-theme-2);">Naša lokacija</h4>
+                                <h4 style="color: var(--clr-theme-2);">Naše lokacije</h4>
                             </div>
                             <div class="location-tabs" role="tablist" aria-label="Preklop lokacija">
-                                <button class="tab active" type="button" data-target="#loc1" aria-selected="true">Lokacija 1</button>
-                                <button class="tab" type="button" data-target="#loc2" aria-selected="false">Lokacija 2</button>
+                                <button class="tab active" type="button" data-target="#loc1" aria-selected="true">Streljana</button>
+                                <button class="tab" type="button" data-target="#loc2" aria-selected="false">Strelište</button>
                             </div>
                             <div class="location-map-footer">
                                 <div id="loc1" class="location-pane active" role="tabpanel" aria-labelledby="Lokacija 1">
-                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3417.2102940438417!2d20.083030976535774!3d43.77681194442675!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4757830001ee126f%3A0xff995aa1582a033a!2zU3RyZWxpxaF0ZSDigJ5NaWxvc2F2IFZ1am92acSH4oCd!5e1!3m2!1ssr!2srs!4v1735654960974!5m2!1ssr!2srs" allowfullscreen="" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d182.7516064680024!2d20.097892390132685!3d43.7527073115314!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2srs!4v1771931095238!5m2!1sen!2srs" allowfullscreen="" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
                                     <div class="location-address">Miće Matovića bb, Arilje</div>
                                 </div>
                                 <div id="loc2" class="location-pane" role="tabpanel" aria-labelledby="Lokacija 2">
