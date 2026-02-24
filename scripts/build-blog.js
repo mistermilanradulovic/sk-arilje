@@ -678,12 +678,17 @@ ${renderAsides()}
       var sel = (a.getAttribute('data-category')||'');
       var idx = state.categories.map(function(v){return v.toLowerCase();}).indexOf(sel.toLowerCase());
       if (idx === -1) state.categories.push(sel); else state.categories.splice(idx, 1);
-      // maintain categoryIds union from selected anchors (if present)
+      // maintain categoryIds union from selected anchors (if present), without relying on CSS.escape
       var selectedIds = [];
-      (state.categories||[]).forEach(function(name){
-        var el = catList.querySelector('a[data-category="'+CSS.escape(name)+'"]');
-        if (el && el.getAttribute('data-idlist')) {
-          selectedIds = selectedIds.concat(el.getAttribute('data-idlist').split(',').filter(Boolean));
+      var links = catList.querySelectorAll('a[data-category]');
+      var selectedLC = (state.categories||[]).map(function(n){ return String(n).toLowerCase(); });
+      links.forEach(function(link){
+        var nameLC = String(link.getAttribute('data-category')||'').toLowerCase();
+        if (selectedLC.indexOf(nameLC) !== -1) {
+          var ids = link.getAttribute('data-idlist') || '';
+          if (ids) {
+            ids.split(',').forEach(function(id){ if (id) selectedIds.push(id); });
+          }
         }
       });
       // de-duplicate ids
