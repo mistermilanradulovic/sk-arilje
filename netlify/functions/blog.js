@@ -278,8 +278,20 @@ exports.handler = async (event) => {
     }
     const data = await resp.json();
     const includesAssets = {};
+    const includesEntries = {};
     if (data.includes && Array.isArray(data.includes.Asset)) {
       data.includes.Asset.forEach(a => { includesAssets[a.sys && a.sys.id] = a; });
+    }
+    if (data.includes && Array.isArray(data.includes.Entry)) {
+      data.includes.Entry.forEach(e => { includesEntries[e.sys && e.sys.id] = e; });
+    }
+    function titleFromLink(link) {
+      try {
+        const id = link && link.sys && link.sys.id;
+        const entry = id && includesEntries[id];
+        const f = entry && entry.fields;
+        return (f && (f.title || f.name)) || '';
+      } catch (_) { return ''; }
     }
     function fileUrlFromAssetLink(link) {
       try {
@@ -309,6 +321,32 @@ exports.handler = async (event) => {
       const heroThumb = hero ? buildImageUrl(hero, 'w=720&h=400&fit=fill&fm=webp&q=80') : '';
       const heroContent = hero ? buildImageUrl(hero, 'w=1280&fm=webp&q=82') : '';
       const heroFull = hero ? buildImageUrl(hero, 'w=1920&fm=webp&q=82') : '';
+      // categories/tags for client-side filtering
+      const categoriesNames = [];
+      if (Array.isArray(f.categories)) {
+        f.categories.forEach(v => {
+          if (typeof v === 'string') categoriesNames.push(v);
+          else {
+            const t = titleFromLink(v);
+            if (t) categoriesNames.push(t);
+          }
+        });
+      }
+      if (f.category) {
+        if (typeof f.category === 'string') categoriesNames.push(f.category);
+        else {
+          const t = titleFromLink(f.category);
+          if (t) categoriesNames.push(t);
+        }
+      }
+      const tagsPlain = [];
+      if (Array.isArray(f.tags)) {
+        f.tags.forEach(t => { if (typeof t === 'string') tagsPlain.push(t); });
+      }
+      if (typeof f.tag === 'string') tagsPlain.push(f.tag);
+      if (data.items && item.metadata && Array.isArray(item.metadata.tags)) {
+        item.metadata.tags.forEach(t => { if (t && t.sys && t.sys.id) tagsPlain.push(t.sys.id); });
+      }
       return {
         id: item.sys.id,
         title,
@@ -318,7 +356,9 @@ exports.handler = async (event) => {
         heroImage: hero,
         heroThumb,
         heroContent,
-        heroFull
+        heroFull,
+        categoriesNames,
+        tagsPlain
       };
     });
     const body = JSON.stringify({

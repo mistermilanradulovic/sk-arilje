@@ -591,6 +591,7 @@ ${renderAsides()}
   var tagList = document.getElementById('blog-tags');
   var state = { q: '', categories: [], tags: [], page: 1, pageSize: 6, total: 0 };
   var pager = document.getElementById('blog-pagination');
+  var allItems = null; // master list
 
   function renderPagination(total, current) {
     if (!pager) return;
@@ -655,27 +656,56 @@ ${renderAsides()}
     if (!grid) return;
     grid.innerHTML = items.map(cardHtml).join('') || '<p>Trenutno nema objava.</p>';
   }
-  function buildUrl(){
-    var base = '/.netlify/functions/blog';
-    var u = new URL(base, window.location.origin);
-    u.searchParams.set('page', String(state.page));
-    u.searchParams.set('pageSize', String(state.pageSize));
-    if (state.q) u.searchParams.set('q', state.q);
-    if (state.categoryIds && state.categoryIds.length) {
-      u.searchParams.set('categoryIds', state.categoryIds.join(','));
-    } else if (state.categories && state.categories.length) {
-      u.searchParams.set('categories', state.categories.join(','));
+  function normalized(arr){ return (arr||[]).map(function(x){return String(x).toLowerCase();}); }
+  function matchesItem(it){
+    // text search
+    if (state.q) {
+      var t = (it.title||'').toLowerCase();
+      var d = (it.description||'').toLowerCase();
+      var q = state.q.toLowerCase();
+      if (t.indexOf(q) === -1 && d.indexOf(q) === -1) return false;
     }
-    if (state.tags && state.tags.length) u.searchParams.set('tags', state.tags.join(','));
-    return u.toString();
+    // categories
+    if (state.categories && state.categories.length) {
+      var postCats = normalized(it.categoriesNames || []);
+      var needed = normalized(state.categories);
+      var any = needed.some(function(n){ return postCats.indexOf(n) !== -1; });
+      if (!any) return false;
+    }
+    // tags
+    if (state.tags && state.tags.length) {
+      var postTags = normalized(it.tagsPlain || []);
+      var neededT = normalized(state.tags);
+      var anyT = neededT.some(function(n){ return postTags.indexOf(n) !== -1; });
+      if (!anyT) return false;
+    }
+    return true;
   }
-  function load(){
-    var url = buildUrl();
-    fetch(url).then(function(r){ return r.json(); }).then(function(data){
-      state.total = data.total || 0;
-      renderGrid(data.items || []);
-      renderPagination(state.total, state.page);
-    }).catch(function(){ /* noop */ });
+  function applyFilters(){
+    if (!allItems) return;
+    var list = allItems.filter(matchesItem);
+    state.total = list.length;
+    var totalPages = Math.max(1, Math.ceil(state.total / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    var start = (state.page - 1) * state.pageSize;
+    var slice = list.slice(start, start + state.pageSize);
+    renderGrid(slice);
+    renderPagination(state.total, state.page);
+  }
+  function loadAllIfNeeded(){
+    if (allItems) { applyFilters(); return; }
+    var u = new URL('/.netlify/functions/blog', window.location.origin);
+    u.searchParams.set('page','1'); u.searchParams.set('pageSize','1000');
+    fetch(u.toString()).then(function(r){ return r.json(); }).then(function(data){
+      allItems = (data.items||[]).slice();
+      // sort newest first client-side to be safe
+      allItems.sort(function(a,b){
+        var da = a.date ? new Date(a.date).getTime() : 0;
+        var db = b.date ? new Date(b.date).getTime() : 0;
+        return db - da;
+      });
+      applyFilters();
+    }).catch(function(){ renderGrid([]); });
   }
   function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
 
@@ -683,7 +713,7 @@ ${renderAsides()}
     qEl.addEventListener('input', function(){
       state.q = (qEl.value||'').trim();
       state.page = 1;
-      load();
+      applyFilters();
     });
   }
   if (catList) {
@@ -714,7 +744,7 @@ ${renderAsides()}
         el.classList.toggle('active', state.categories.map(function(x){return x.toLowerCase();}).indexOf(v.toLowerCase()) !== -1);
       });
       state.page = 1;
-      load();
+      applyFilters();
     });
   }
   if (tagList) {
@@ -730,7 +760,7 @@ ${renderAsides()}
         el.classList.toggle('active', state.tags.map(function(x){return x.toLowerCase();}).indexOf(v.toLowerCase()) !== -1);
       });
       state.page = 1;
-      load();
+      applyFilters();
     });
   }
   // Fetch aggregates for category counts and tags
@@ -763,7 +793,7 @@ ${renderAsides()}
   })();
   // initial paint
   attachPager();
-  load();
+  loadAllIfNeeded();
 })();
 </script>
 ${renderFooter()}
