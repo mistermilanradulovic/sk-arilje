@@ -131,18 +131,28 @@ exports.handler = async (event) => {
     }
     // If we have referenced category IDs, fetch union via multiple requests and merge
     if (categoryIds.length > 0) {
-      async function fetchForLink(id) {
-        const u = new URL(url.toString());
+      // Build from base to avoid inherited limit/skip interfering with union fetches
+      function baseUrl() {
+        const u = new URL(`https://cdn.contentful.com/spaces/${space}/environments/${environment}/entries`);
         const p = u.searchParams;
-        p.set('links_to_entry', id);
+        p.set('content_type', 'blogPost');
         p.set('include', '2');
-        // keep search and tags if present
+        // order not critical for union fetch, we'll sort after merge
         if (q) p.set('query', q);
         if (tags) {
           p.set('fields.tags[in]', tags);
           p.set('fields.tag[in]', tags);
           p.set('metadata.tags.sys.id[in]', tags);
         }
+        return u;
+      }
+      async function fetchForLink(id) {
+        const u = baseUrl();
+        const p = u.searchParams;
+        p.set('links_to_entry', id);
+        // fetch generously; we'll paginate after merging
+        p.set('limit', '1000');
+        p.delete('skip');
         const r = await fetch(u.toString(), {
           headers: {
             'Authorization': `Bearer ${token}`,
