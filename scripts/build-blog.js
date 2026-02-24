@@ -82,20 +82,23 @@ function renderHead({ title, description }) {
     .blog-details-content ol ul {
       margin-left: 1rem;
     }
-    /* Post hero image: cap height to avoid oversized banners */
+    /* Post hero image: tighter, consistent banner */
     .blog-details-thumb {
       overflow: hidden;
       border-radius: 4px;
+      aspect-ratio: 16 / 9;
+      max-height: 320px;
     }
     .blog-details-thumb img {
       width: 100%;
-      height: clamp(220px, 45vh, 520px);
+      height: 100%;
       object-fit: cover;
       display: block;
     }
     @media (max-width: 575.98px) {
-      .blog-details-thumb img {
-        height: clamp(200px, 40vh, 420px);
+      .blog-details-thumb {
+        aspect-ratio: 16 / 10;
+        max-height: 240px;
       }
     }
     /* Blog index: inline meta (date + comments) */
