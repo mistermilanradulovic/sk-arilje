@@ -82,6 +82,22 @@ function renderHead({ title, description }) {
     .blog-details-content ol ul {
       margin-left: 1rem;
     }
+    /* Post hero image: cap height to avoid oversized banners */
+    .blog-details-thumb {
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    .blog-details-thumb img {
+      width: 100%;
+      height: clamp(220px, 45vh, 520px);
+      object-fit: cover;
+      display: block;
+    }
+    @media (max-width: 575.98px) {
+      .blog-details-thumb img {
+        height: clamp(200px, 40vh, 420px);
+      }
+    }
     /* Blog index: inline meta (date + comments) */
     .tp-post-content .meta-list {
       display: flex;
