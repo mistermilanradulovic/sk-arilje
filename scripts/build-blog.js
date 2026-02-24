@@ -957,7 +957,8 @@ ${renderAsides()}
   (function linkifyPhones(){
     var root = document.querySelector('.blog-details-content');
     if (!root) return;
-    var phoneRe = /(\+?\d[\d\s\/\-]{6,}\d)/g; // simple, robust pattern
+    // Use RegExp constructor with escaped backslashes to survive template-string emission
+    var phoneRe = new RegExp("(\\\\+?\\\\d[\\\\d\\\\s\\\\/\\\\-]{6,}\\\\d)","g"); // simple, robust pattern
     function normalizeTel(txt){
       var hasPlus = txt.trim().charAt(0) === '+';
       var digits = txt.replace(/[^\d]/g,'');
