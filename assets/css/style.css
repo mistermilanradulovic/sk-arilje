@@ -10914,6 +10914,20 @@ body {
 
 /*# sourceMappingURL=style.css.map */
 
+/* Services page: description text in service cards */
+.service-default .service-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--clr-theme-3);
+  margin-bottom: 15px;
+}
+.service-default .service-title {
+  margin-bottom: 12px;
+}
+.service-single:hover .service-desc {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 /* High-specificity fix: contact footer newsletter at 1200–1399px (e.g., 1343px)
    Stack button under input to allow wider email field */
 @media only screen and (min-width: 1200px) and (max-width: 1399px) {
