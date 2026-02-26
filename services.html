@@ -41,6 +41,25 @@
     <link rel="stylesheet" href="assets/css/odometer.css">
     <link rel="stylesheet" href="assets/css/default.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Page-specific header tweaks: align nav closer to the call-us block (same as Contact) */
+        .header-main-right-header2 {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+        .header-main-right-header2 .main-menu2 {
+            margin-left: auto;
+            margin-right: 0;
+        }
+        @media (min-width: 1200px) {
+            .header-main-right-header2 .main-menu2 nav#mobile-menu > ul {
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+    </style>
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -77,19 +96,16 @@
 
     <!-- header area start  -->
     <header>
-        <div id="header-sticky" class="header-main header-main1">
+        <div id="header-sticky" class="header-main header-main2">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-xl-12 col-lg-12">
                         <div class="header-main-content-wrapper">
-                            <div class="header-main-left header-main-left-header1">
-                                <div class="header-logo header1-logo">
-                                    <a href="index.html" class="logo-white"><img src="assets/img/logo/logo-white.png"
-                                            alt="logo-img"></a>
-                                </div>
+                            <div class="header-main-left header-main-left-header2">
+                                <a href="index.html" class="header-brand-text" style="font-weight:800; font-size:18px; letter-spacing:.05em; text-transform:uppercase; color:var(--clr-common-white); text-decoration:none;">Streljački klub Arilje</a>
                             </div>
-                            <div class="header-main-right header-main-right-header1">
-                                <div class="main-menu main-menu1 d-none d-xl-block">
+                            <div class="header-main-right header-main-right-header2">
+                                <div class="main-menu main-menu2 d-none d-xl-block">
                                     <nav id="mobile-menu">
                                         <ul>
                                             <li class="menu-item-has-children"><a href="index.html">Početna</a></li>
@@ -112,19 +128,18 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="meta-items meta-items-header1 d-none d-lg-inline-flex">
+                                <div class="meta-items meta-items-header1 d-none d-md-inline-flex">
                                     <div class="meta-item header-meta-item">
                                         <a href="tel:+381677425456">
                                             <div class="meta-item-icon">
                                                 <i class="fas fa-phone-alt"></i>
                                             </div>
                                         </a>
-                                        <div class="meta-item-content d-none d-xxl-inline-block">
+                                        <div class="meta-item-content d-none d-md-inline-block">
                                             <div class="meta-title">Pozovite nas</div>
                                             <p><a href="tel:+381677425456">+381 677 425 456</a></p>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -298,7 +313,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".3s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service1.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Obuka mladih kategorija"></a>
                             </div>
                             <div class="service-info">
@@ -316,7 +331,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".4s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service2.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Treninzi takmičarskih ekipa"></a>
                             </div>
                             <div class="service-info">
@@ -334,7 +349,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".5s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service3.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Bezbedno rukovanje oružjem"></a>
                             </div>
                             <div class="service-info">
@@ -352,7 +367,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".3s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service4.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Učešće na takmičenjima"></a>
                             </div>
                             <div class="service-info">
@@ -370,7 +385,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".4s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service5.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Priprema rekreativnih ekipa"></a>
                             </div>
                             <div class="service-info">
@@ -388,7 +403,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".5s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service6.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Organizacija takmičenja"></a>
                             </div>
                             <div class="service-info">
@@ -406,7 +421,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".3s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service7.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Školske ekipe"></a>
                             </div>
                             <div class="service-info">
@@ -424,7 +439,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".4s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service8.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Treninzi sa rekreativnim strelcima"></a>
                             </div>
                             <div class="service-info">
@@ -442,7 +457,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="service-single service-default mb-30 wow fadeInUp" data-wow-delay=".5s">
                             <div class="service-thumb">
-                                <a href="service-details.html"><img src="assets/img/service/service9.jpg"
+                                <a href="service-details.html"><img src="assets/img/service/service1.jpg" width="450" height="308"
                                         alt="Individualni treninzi"></a>
                             </div>
                             <div class="service-info">
@@ -570,7 +585,7 @@
                         <div class="col-lg-3 col-md-6">
                             <div class="fact-single style-2">
                                 <div class="fact-content">
-                                    <span class="fact-number"><span class="odometer" data-count="2">0</span>K<span
+                                    <span class="fact-number"><span class="odometer" data-count="100">0</span><span
                                             class="plus">+</span></span>
                                     <span class="fact-title">ODRŽANIH TAKMIČENJA</span>
                                 </div>
@@ -579,8 +594,7 @@
                         <div class="col-lg-3 col-md-6">
                             <div class="fact-single style-2">
                                 <div class="fact-content">
-                                    <span class="fact-number"><span class="odometer" data-count="460">0</span><span
-                                            class="plus">+</span></span>
+                                    <span class="fact-number"><span class="odometer" data-count="5">0</span></span>
                                     <span class="fact-title">KVALIFIKOVANIH TRENERA</span>
                                 </div>
                             </div>
@@ -588,8 +602,7 @@
                         <div class="col-lg-3 col-md-6">
                             <div class="fact-single style-2">
                                 <div class="fact-content">
-                                    <span class="fact-number"><span class="odometer" data-count="120">0</span><span
-                                            class="plus">+</span></span>
+                                    <span class="fact-number"><span class="odometer" data-count="2">0</span></span>
                                     <span class="fact-title">LOKACIJA</span>
                                 </div>
                             </div>
@@ -597,8 +610,7 @@
                         <div class="col-lg-3 col-md-6">
                             <div class="fact-single style-2">
                                 <div class="fact-content">
-                                    <span class="fact-number"><span class="odometer" data-count="550">0</span><span
-                                            class="plus">+</span></span>
+                                    <span class="fact-number"><span class="odometer" data-count="9">0</span></span>
                                     <span class="fact-title">AKTIVNIH USLUGA</span>
                                 </div>
                             </div>
@@ -663,8 +675,7 @@
     </main>
 
     <!-- footer-area-start -->
-    <footer class="footer1-bg footer-sticky" data-background="assets/img/bg/footer1-bg.jpg">
-        <div class="footer1-overlay"></div>
+    <footer class="footer-bg footer-sticky">
         <div class="contact-meta-area">
             <div class="container">
                 <div class="contact-meta-wrapper">
@@ -761,7 +772,7 @@
                                 <ul>
                                     <li><a href="index.html">Početna</a></li>
                                     <li><a href="services.html">Usluge</a></li>
-                                    <li><a href="about.html">O nama</a></li>
+                                    <li><a href="javascript:void(0)">O nama</a></li>
                                     <li><a href="contact.html">Kontakt</a></li>
                                 </ul>
                             </div>
