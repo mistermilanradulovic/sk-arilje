@@ -945,7 +945,7 @@ ${renderAsides()}
             </div>` : '' }
             ${related && related.length ? `
             <div class="mt-30">
-              <h4 class="mb-15">Možda će Vam se svideti</h4>
+              <h4 class="mb-15">Pročitajte još</h4>
               <div class="row">
                 ${related.slice(0,3).map(r => `
                 <div class="col-md-4 mb-20">
