@@ -300,7 +300,7 @@ function renderHead({ title, description, url, image }) {
                     <ul>
                       <li><a href="/index.html">Početna</a></li>
                       <li><a href="javascript:void(0)">O nama</a></li>
-                      <li><a href="javascript:void(0)">Usluge</a></li>
+                      <li><a href="/services.html">Usluge</a></li>
                       <li class="menu-item-has-children"><a href="/blog/">Blog</a></li>
                       <li><a href="/contact.html">Kontakt</a></li>
                     </ul>
