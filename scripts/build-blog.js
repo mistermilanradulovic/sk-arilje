@@ -44,6 +44,8 @@ function renderHead({ title, description, url, image }) {
   <title>${htmlEscape(title)}</title>
   <meta name="description" content="${htmlEscape(description || '')}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#ffaf00">
   <link rel="shortcut icon" type="image/x-icon" href="/assets/img/favicon.png">
   ${url ? `<link rel="canonical" href="${htmlEscape(url)}">` : ''}
   <!-- Open Graph -->
@@ -535,9 +537,9 @@ function renderIndex(posts) {
   }).join('\n');
 
   const pageUrl = SITE_URL.replace(/\/+$/,'') + '/blog/';
-  const defaultImage = SITE_URL.replace(/\/+$/,'') + '/assets/img/bg/page-title-bg.jpg';
+  const defaultImage = SITE_URL.replace(/\/+$/,'') + '/assets/img/logo/skarilje-logo-src.png';
   return `
-${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Najnovije vesti i objave', url: pageUrl, image: defaultImage })}
+${renderHead({ title: 'Blog | Streljački klub Arilje', description: 'Vesti, obaveštenja i članci Streljačkog kluba Arilje — takmičenja, trening, obuka i rekreativno gađanje.', url: pageUrl, image: defaultImage })}
 ${renderAsides()}
 <main>
   <section class="page-title-area page-title--compact" data-background="/assets/img/bg/page-title-bg.jpg">

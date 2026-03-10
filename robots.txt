@@ -1,5 +1,25 @@
 User-agent: *
 Allow: /
+Allow: /index.html
+Allow: /services.html
+Allow: /about.html
+Allow: /contact.html
+Allow: /blog/
+
+Disallow: /index-2.html
+Disallow: /index-3.html
+Disallow: /elements-
+Disallow: /donation.html
+Disallow: /blog-2.html
+Disallow: /blog-details.html
+Disallow: /team.html
+Disallow: /team-details.html
+Disallow: /service-details.html
+Disallow: /gallery.html
+Disallow: /pricing.html
+Disallow: /faq.html
+Disallow: /auth.html
+Disallow: /error-404.html
 
 Sitemap: https://www.sk-arilje.rs/sitemap.xml
 Sitemap: https://www.sk-arilje.rs/blog/sitemap.xml
