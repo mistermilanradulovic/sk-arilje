@@ -96,20 +96,27 @@ function renderHead({ title, description, url, image }) {
     .blog-details-content ol ul {
       margin-left: 1rem;
     }
-    /* Post hero image: cap height to avoid oversized banners (reverted to previous, larger style) */
+    /* Post hero image: cap size so it never becomes oversized */
     .blog-details-thumb {
       overflow: hidden;
       border-radius: 4px;
+      max-height: 480px;
     }
     .blog-details-thumb img {
       width: 100%;
-      height: clamp(220px, 45vh, 520px);
+      max-height: 480px;
+      height: clamp(220px, 40vh, 480px);
       object-fit: cover;
+      object-position: center;
       display: block;
     }
     @media (max-width: 575.98px) {
+      .blog-details-thumb {
+        max-height: 360px;
+      }
       .blog-details-thumb img {
-        height: clamp(200px, 40vh, 420px);
+        height: clamp(200px, 35vh, 360px);
+        max-height: 360px;
       }
     }
     /* Blog index: inline meta (date + comments) */
@@ -259,8 +266,7 @@ function renderHead({ title, description, url, image }) {
       opacity: .5;
       pointer-events: none;
     }
-    /* Post inline/hero image: scale responsively */
-    .blog-details-thumb img,
+    /* Post content images only: scale responsively (hero uses .blog-details-thumb rules above) */
     .blog-details-content img {
       max-width: 100%;
       height: auto;
