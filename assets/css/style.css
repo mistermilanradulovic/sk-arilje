@@ -4734,6 +4734,21 @@ div.mean-container a.meanmenu-reveal {
   margin-inline-end: calc(-100% - 30px);
 }
 
+.service-slider .service-thumb {
+  height: 280px;
+  overflow: hidden;
+}
+.service-slider .service-thumb > a {
+  display: block;
+  height: 100%;
+}
+.service-slider .service-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
 .service-btn .popup-video {
   position: relative;
   z-index: 2;
