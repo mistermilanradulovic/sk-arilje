@@ -4010,7 +4010,7 @@ div.mean-container a.meanmenu-reveal {
   top: 0;
   inset-inline-start: 0;
   background: var(--clr-common-black);
-  opacity: 0.6;
+  opacity: 0.7;
   z-index: 1;
 }
 
