@@ -143,6 +143,24 @@
 	max-width: 690px;
 }
 
+.rezultati-images {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	position: relative;
+	.rezultati-img {
+		width: 100%;
+		height: 200px;
+		object-fit: cover;
+		object-position: center;
+		display: block;
+		border-radius: 4px;
+	}
+	@media #{$sm,$xs} {
+		.rezultati-img { height: 160px; }
+	}
+}
+
 .about-thumb-1-wrapper {
 
 	padding-bottom: 9.4%;
