@@ -96,27 +96,26 @@ function renderHead({ title, description, url, image }) {
     .blog-details-content ol ul {
       margin-left: 1rem;
     }
-    /* Post hero image: cap size so it never becomes oversized */
+    /* Post hero image: show full image, no crop; constrain to decent size; align left */
     .blog-details-thumb {
       overflow: hidden;
       border-radius: 4px;
-      max-height: 480px;
+      text-align: left;
     }
     .blog-details-thumb img {
-      width: 100%;
-      max-height: 480px;
-      height: clamp(220px, 40vh, 480px);
-      object-fit: cover;
-      object-position: center;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      max-height: 520px;
       display: block;
+      margin: 0;
+      margin-inline-end: auto;
+      object-fit: contain;
+      object-position: center;
     }
     @media (max-width: 575.98px) {
-      .blog-details-thumb {
-        max-height: 360px;
-      }
       .blog-details-thumb img {
-        height: clamp(200px, 35vh, 360px);
-        max-height: 360px;
+        max-height: 400px;
       }
     }
     /* Blog index: inline meta (date + comments) */
