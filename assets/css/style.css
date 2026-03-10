@@ -4298,21 +4298,16 @@ div.mean-container a.meanmenu-reveal {
 .rezultati-images {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
   position: relative;
 }
-.rezultati-images .rezultati-img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  border-radius: 4px;
+.rezultati-images .about-thumb + .about-thumb {
+  margin-top: 0;
 }
-@media (max-width: 767.98px) {
-  .rezultati-images .rezultati-img {
-    height: 160px;
-  }
+.rezultati-images .about-thumb img {
+  width: 100%;
+  display: block;
+  vertical-align: middle;
 }
 
 .about-thumb-1-wrapper {
