@@ -2525,6 +2525,16 @@ div.mean-container a.meanmenu-reveal {
   background: var(--clr-common-white);
 }
 
+/* WhatsApp QR code block – visible on larger screens only */
+.whatsapp-qr-wrap img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.whatsapp-qr-wrap a:hover img {
+  opacity: 0.9;
+}
+
 /* Stick contact + socials to bottom in side menus and spread socials */
 .offset-info {
   display: flex;
